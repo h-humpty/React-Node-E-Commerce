@@ -10,6 +10,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder",
     "data:destroy": "node backend/seeder -d",
+    "heroku-prebuild": "npm i -f",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm install && npm run build --prefix frontend"
   },
   "author": "Tahseen",
