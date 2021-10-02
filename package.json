@@ -32,7 +32,10 @@
     "node-cron": "^3.0.0"
   },
   "devDependencies": {
-    "concurrently": "^6.2.1",
+    "concurrently": "^6.3.0",
     "nodemon": "^2.0.12"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.2"
   }
 }
