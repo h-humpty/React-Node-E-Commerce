@@ -10,7 +10,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder",
     "data:destroy": "node backend/seeder -d",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm install && npm run build --prefix frontend"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
   "author": "Tahseen",
   "license": "ISC",
@@ -34,8 +34,5 @@
   "devDependencies": {
     "concurrently": "^6.3.0",
     "nodemon": "^2.0.12"
-  },
-  "optionalDependencies": {
-    "fsevents": "^2.3.2"
   }
 }
