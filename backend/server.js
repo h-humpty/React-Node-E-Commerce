@@ -6,14 +6,14 @@ const notFound = require("./middleware/errorMiddleware");
 const errorHandler = require("./middleware/errorMiddleware");
 const path = require("path");
 const morgan = require("morgan");
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
 
 dotenv.config();
 connectDB();
 
 app.use(cors());
-app.options('*', cors())
+app.options("*", cors());
 
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -23,8 +23,7 @@ const inventoryCategoryRoutes = require("./routes/inventoryCategoryRoutes");
 const recipeRoutes = require("./routes/recipeRoutes");
 const inventoryLevelRoutes = require("./routes/inventoryLevelRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
-const receiptRoutes = require("./routes/receiptRoutes")
-
+const receiptRoutes = require("./routes/receiptRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -46,7 +45,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/uploads", express.static(path.join(__dirname)));
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "/frontend/build")));
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
 
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
