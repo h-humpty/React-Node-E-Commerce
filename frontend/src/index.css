@@ -2,10 +2,6 @@ main {
   min-height: 80vh;
 }
 
-h3 {
-  padding: 1rem 0;
-}
-
 h1 {
   /* padding: 1rem 0; */
   font-size: 5.5rem;
@@ -13,45 +9,36 @@ h1 {
 
 h2 {
   padding: 1rem 0;
-  font-size: 5rem;
+  font-size: 4.5rem;
+}
+
+h3 {
+  padding: 1rem 0;
+  font-size: 3.5rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+  line-height: 2rem;
 }
 
 .home-div {
-  height: 600px
+  height: 600px;
 }
 
 .products-card {
-  width: 25%
+  width: 25%;
 }
 
-@media(max-width: 850px){
-  h1 {
-    font-size: 2.5rem;
-  }
-
-  h2 {
-    font-size: 2rem;
-  }
-
-  h3 {
-    font-size: 2.5rem;
-  }
-
-  .carousel-slider {
-    height: 100%;
-    width: 100%;
-    padding: 30px;
-  }
-
-  .home-div{
-    height: calc(100vh * 1.3);
-    flex-direction: column;
-  }
-
-  .products-card {
-    width: 90vw;
-  }
+.flex-div {
+  flex: 1;
 }
+
+.image-media{
+  width: 300px;
+}
+
+
 
 .rating span {
   margin: 0.1rem;
@@ -222,4 +209,56 @@ h2 {
   font-size: 1.6rem;
   /* line-height: 14rem; */
   padding: 0 15px;
+}
+
+
+@media (max-width: 850px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .carousel-slider {
+    height: 100%;
+    width: 100%;
+    padding: 30px;
+  }
+
+  .home-div {
+    height: 100vh;
+    flex-direction: column;
+  }
+
+  .products-card {
+    width: 90vw;
+  }
+
+  .flex-div {
+    flex: 0.5;
+  }
+
+  .image-media {
+    width: 160px
+  }
+
+  .center {
+    padding: 0px 6px;
+    font-size: 1.25rem
+  }
+
+  .center-smaller {
+    padding: 0px 6px;
+  }
 }

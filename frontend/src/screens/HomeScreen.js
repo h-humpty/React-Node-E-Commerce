@@ -90,7 +90,7 @@ const HomeScreen = ({ match, history }) => {
         </div>
       )}
       <Container>
-        <h1
+        <h3
           style={{
             textAlign: "center",
             fontFamily: "Montserrat,sans-serif",
@@ -100,7 +100,7 @@ const HomeScreen = ({ match, history }) => {
           }}
         >
           BACKYARD BBQ'S DEALS
-        </h1>
+        </h3>
         {loading ? (
           <Loader />
         ) : error ? (
@@ -201,16 +201,18 @@ const HomeScreen = ({ match, history }) => {
               display: "flex",
               height: "100%",
               width: "100%",
-              flex: 1,
+              
               flexDirection: "column",
               backgroundColor: "floralwhite ",
               justifyContent: "center",
             }}
+
+            className="flex-div"
           >
             <h3
               style={{
                 color: "#4a4a4a",
-                fontSize: "40px",
+               
                 fontWeight: "900",
                 textAlign: "center",
                 fontFamily: "Montserrat,sans-serif",
@@ -222,10 +224,9 @@ const HomeScreen = ({ match, history }) => {
             <h4
               style={{
                 color: "#4a4a4a",
-                fontSize: "20px",
+                
                 textAlign: "center",
-                padding: "30px",
-                lineHeight: "2rem",
+               
               }}
             >
               Every month we come out with a new and unique premium deals for
@@ -274,7 +275,7 @@ const HomeScreen = ({ match, history }) => {
             <h3
               style={{
                 color: "white",
-                fontSize: "50px",
+                
                 fontWeight: "900",
                 textAlign: "center",
                 fontFamily: "Montserrat,sans-serif",

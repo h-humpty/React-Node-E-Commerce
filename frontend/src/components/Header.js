@@ -30,6 +30,7 @@ const Header = () => {
               style={{ height: "80px", width: "200px", cursor: "pointer" }}
               src={logo}
               alt='BACKYARD BBQ RESTAURANT'
+              className="image-media"
             />
           </LinkContainer>
           {/* <Route render={({ history }) => <SearchBox history={history} />} /> */}
