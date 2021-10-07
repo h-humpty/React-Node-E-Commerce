@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button, Form, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -55,6 +55,8 @@ const RecipeCreateScreen = ({ history }) => {
   const { userInfo } = userLogin;
 
   const [user, setUser] = useState(userInfo);
+  const [selectProducts, setSelectProducts] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   useEffect(() => {
     if (!userInfo || !userInfo.isAdmin) {
@@ -77,67 +79,76 @@ const RecipeCreateScreen = ({ history }) => {
     history,
     userInfo,
     successCreate,
-    errorCreate,
     dispatch,
-    successInventoryLevelSuccess,
   ]);
 
   // console.log(productFiltered)
+  console.log(ingredients)
 
-  const selectProducts =
-    products &&
-    products
-      .map((items) => {
-        if (
-          items.category !== "Delivery" &&
-          items.category !== "Deals" &&
-          items.category !== "Crockery" &&
-          items.category === items.option1_name
-        ) {
+  useMemo(() => {
+    if (successFiltered) {
+      let filtered = products
+        .map((items) => {
+          if (
+            items.category !== "Delivery" &&
+            items.category !== "Deals" &&
+            items.category !== "Crockery" &&
+            items.category === items.option1_name
+          ) {
+            return {
+              variant_id: items.variant_id,
+              label: items._id,
+              product: items.id,
+              value: true,
+              image_url: items.image,
+            };
+          }
+        })
+        .filter((filtered) => filtered);
+
+      setSelectProducts([...filtered]);
+    }
+  }, [products, successFiltered]);
+
+
+  useMemo(() => {
+    if (successInventoryLevelSuccess) {
+      let filtered = inventoryLevel
+        .filter((item) => {
+          if (
+            item.category === "Grocery" ||
+            item.category === "Spice" ||
+            item.category === "Fruits & Vegetables" ||
+            item.category === "Dairy" ||
+            item.category === "Wheat" ||
+            item.category === "Poultry" ||
+            item.category === "Beef" ||
+            item.category === "Mutton" ||
+            item.item === "Water"
+          )
+            return item;
+        })
+        .map((item) => {
           return {
-            variant_id: items.variant_id,
-            label: items._id,
-            product: items.id,
             value: true,
-            image_url: items.image,
+            label: item.item,
+            _id: item._id,
+            category: item.category,
+            average_cost: item.average_cost ? item.average_cost : 0,
           };
-        }
+        }).sort(function(a, b){
+          if(a.label < b.label) { return -1; }
+          if(a.label > b.label) { return 1; }
+          return 0;
       })
-      .filter((filtered) => filtered);
 
-  // console.log(selectProducts)
-  // console.log(label);
-  // console.log(image);
-  // console.log(ingredients);
-  // console.log(variant_id);
-  // console.log(product);
 
-  let filteredCategories =
-    inventoryLevel &&
-    inventoryLevel
-      .filter((item) => {
-        if (
-          item.category === "Grocery" ||
-          item.category === "Spice" ||
-          item.category === "Fruits & Vegetables" ||
-          item.category === "Dairy" ||
-          item.category === "Wheat" ||
-          item.category === "Poultry" ||
-          item.category === "Beef" ||
-          item.category === "Mutton"
-        )
-          return item;
-      })
-      .map((item) => {
-        return {
-          value: true,
-          label: item.item,
-          _id: item._id,
-          category: item.category,
-          name: "text",
-          average_cost: item.average_cost,
-        };
-      });
+
+      setFilteredCategories([...filtered]);
+    }
+  }, [inventoryLevel, successInventoryLevelSuccess]);
+
+  // console.log(filteredCategories)
 
   const handleInputChangeProducts = (e) => {
     setLabel(e.label);
@@ -148,30 +159,34 @@ const RecipeCreateScreen = ({ history }) => {
   const handleInputChange = (e, index) => {
     let list = [...ingredients];
 
-    if (e.name === "text") {
-      // console.log(e.label)
-      // console.log(list[index]["text"])
-      list[index]["text"] = e.label;
-      let findCategory = filteredCategories.filter((items) => {
-        if (items.label === list[index]["text"]) {
-          return items;
-        }
-      });
+    if (e.target) {
+      list[index]["weight"] = e.target.value;
+    }
+
+    // console.log( e.label)
+    
+
+    let findCategory = filteredCategories.filter((items) => {
+      if (items.label === list[index]["text"]) {
+        return items;
+      } else if (items.label === e.label) {
+        return items;
+      }
+    });
+
+    // console.log(findCategory[0]);
+    if (findCategory.length > 0) {
 
       list[index]["category"] = findCategory[0].category;
       list[index]["text"] = findCategory[0].label;
-      list[index]["cost"] = findCategory[0].average_cost;
+      list[index]["label"] = findCategory[0].label;
+
       if (list[index]["weight"] > 0) {
         list[index]["average_cost"] =
-          (list[index]["cost"] / 1000) * list[index]["weight"];
+          findCategory[0].average_cost > 0
+            ? (findCategory[0].average_cost / 1000) * list[index]["weight"]
+            : 0;
       }
-    }
-    // console.log(list);
-    if (e.target) {
-      list[index]["weight"] = e.target.value;
-      list[index]["average_cost"] =
-        (list[index]["cost"] / 1000) * list[index]["weight"];
-      // console.log((cost / 1000) * list[index]["weight"])
     }
 
     setIngredients(list);
@@ -208,17 +223,16 @@ const RecipeCreateScreen = ({ history }) => {
         image,
         ingredients,
         variant_id,
-        total_cost: totalCost
+        total_cost: totalCost,
       })
     );
   };
 
   useEffect(() => {
-  if(ingredients) {
-    setTotalCost(() => ingredients.reduce((a, b) => a + b.average_cost, 0))
-  }
-  }, [ingredients])
-  
+    if (ingredients) {
+      setTotalCost(() => ingredients.reduce((a, b) => a + b.average_cost, 0));
+    }
+  }, [ingredients]);
 
   // console.log(totalCost)
   // reduce((acc, item) => item.rating + acc, 0)
@@ -282,7 +296,11 @@ const RecipeCreateScreen = ({ history }) => {
 
             {ingredients.map((i, index) => {
               return (
-                <Row className='create-update' key={index} style={{ width: "100%", padding: 10 }}>
+                <Row
+                  className='create-update'
+                  key={index}
+                  style={{ width: "100%", padding: 10 }}
+                >
                   <Form.Group
                     as={Col}
                     controlId='Item'
@@ -332,7 +350,7 @@ const RecipeCreateScreen = ({ history }) => {
                       type='text'
                       placeholder='Enter Weight'
                       value={i.weight}
-                      onChange={(e) => handleInputChange(e, index) }
+                      onChange={(e) => handleInputChange(e, index)}
                     ></Form.Control>
                   </Form.Group>
 

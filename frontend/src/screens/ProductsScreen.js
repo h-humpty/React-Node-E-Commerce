@@ -20,10 +20,10 @@ const ProductsScreen = ({ match }) => {
     dispatch(listProducts());
   }, [dispatch]);
 
-  console.log(productList);
+  // console.log(productList);
 
   return (
-    <>
+    <div style={{marginTop: "2rem"}}>
       <Helmet>
         <title>Welcome to Backyard BBQ</title>
         <meta
@@ -39,7 +39,7 @@ const ProductsScreen = ({ match }) => {
       ) : error ? (
         <Message variant='danger'>{error}</Message>
       ) : (
-        <Row style={{ display: "flex" }}>
+        <Row style={{ display: "flex", justifyContent: "center",  }}>
           {products.map((product, idx) => {
             if (
               product.item_name !== "Cigarette" &&
@@ -48,12 +48,14 @@ const ProductsScreen = ({ match }) => {
             ) {
               return (
                 <Col
-                  style={{ width: "25%" }}
+                  
                   key={idx}
                   sm={16}
                   md={6}
                   lg={4}
                   xl={3}
+
+                  className="products-card"
                 >
                   <Card key={idx} className='my-3 p-3 rounded'>
                     <Link
@@ -86,7 +88,7 @@ const ProductsScreen = ({ match }) => {
           })}
         </Row>
       )}
-    </>
+    </div>
   );
 };
 

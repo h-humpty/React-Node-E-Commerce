@@ -58,7 +58,7 @@ router.route("/:id").put(
     const {label, image, ingredients, variant_id, id } = req.body;
 
     const recipe = await Recipe.findById(req.params.id);
-    console.log(recipe)
+    // console.log(recipe)
 
     if (recipe) {
       recipe.label = label,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,25 +10,28 @@ import { listTopProducts } from "../actions/productActions";
 import ItemsCarousel from "react-items-carousel";
 
 const HomeScreen = ({ match, history }) => {
+
+
   const dispatch = useDispatch();
 
   const productTopRated = useSelector((state) => state.productTopRated);
   const { loading, error, products } = productTopRated;
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth)
 
   const [index, setIndex] = useState(0);
 
-  console.log(index);
-
   useEffect(() => {
     dispatch(listTopProducts());
-  }, [dispatch]);
+    
+  }, [dispatch, screenWidth]);
+
 
   const handleClick = (id) => {
     history.push(`/product/${id}`);
   };
 
   return (
-    <>
+    <div style={{overflowX: "hidden"}}>
       <Helmet>
         <title>Welcome to Backyard BBQ</title>
         <meta
@@ -41,8 +44,7 @@ const HomeScreen = ({ match, history }) => {
         <div
           style={{
             backgroundImage: `url(${products[2].variants.variant_image})`,
-            width: "100%",
-            height: "600px",
+            height: "65vh",
             backgroundSize: "cover",
             flex: 1,
           }}
@@ -59,23 +61,23 @@ const HomeScreen = ({ match, history }) => {
             <h1
               style={{
                 color: "white",
-                fontSize: "70px",
+               
                 textShadow: "3px 3px black",
                 textAlign: "center",
               }}
             >
               ENJOY ALL YOUR FAVORITE MEALS AT
             </h1>
-            <h1
+            <h2
               style={{
                 color: "white",
-                fontSize: "90px",
+               
                 textAlign: "center",
                 textShadow: "3px 3px black",
               }}
             >
               BACKYARD BBQ RESTAURANT
-            </h1>
+            </h2>
             <Link
               style={{ justifyContent: "center", display: "flex" }}
               to='/products'
@@ -94,7 +96,7 @@ const HomeScreen = ({ match, history }) => {
             fontFamily: "Montserrat,sans-serif",
             fontWeight: "900",
             color: "#4a4a4a",
-            fontSize: "2.7rem"
+            fontSize: "2.7rem",
           }}
         >
           BACKYARD BBQ'S DEALS
@@ -104,7 +106,7 @@ const HomeScreen = ({ match, history }) => {
         ) : error ? (
           <Message variant='danger'>{error} </Message>
         ) : (
-          <div>
+          <div className="carousel-slider" >
             {/* {products.map((product, idx) => (
               <Col key={idx} sm={16} md={6} lg={4} xl={3}>
                 <Product product={product} />
@@ -114,7 +116,7 @@ const HomeScreen = ({ match, history }) => {
             <ItemsCarousel
               requestToChangeActive={setIndex}
               activeItemIndex={index}
-              numberOfCards={3}
+              numberOfCards={screenWidth < 850 ? 1 : 3}
               gutter={20}
               leftChevron={
                 <i
@@ -130,8 +132,9 @@ const HomeScreen = ({ match, history }) => {
               }
               outsideChevron
               chevronWidth={40}
-              slidesToScroll={3}
+              slidesToScroll={screenWidth < 850 ? 1 : 3}
               alwaysShowChevrons={false}
+              className="carousel-card"
             >
               {products.map((product, idx) => {
                 return (
@@ -176,8 +179,10 @@ const HomeScreen = ({ match, history }) => {
             display: "flex",
             width: "100%",
             flex: 2,
-            height: "600px",
+   
           }}
+
+          className="home-div"
         >
           <div
             style={{
@@ -209,7 +214,7 @@ const HomeScreen = ({ match, history }) => {
                 fontWeight: "900",
                 textAlign: "center",
                 fontFamily: "Montserrat,sans-serif",
-                padding: "30px"
+                padding: "30px",
               }}
             >
               Try our new Arabic Platter !
@@ -220,8 +225,7 @@ const HomeScreen = ({ match, history }) => {
                 fontSize: "20px",
                 textAlign: "center",
                 padding: "30px",
-                lineHeight: "2rem"
-        
+                lineHeight: "2rem",
               }}
             >
               Every month we come out with a new and unique premium deals for
@@ -231,7 +235,12 @@ const HomeScreen = ({ match, history }) => {
             </h4>
 
             <Link
-              style={{ justifyContent: "center", display: "flex", alignSelf:"center", marginTop: "3rem" }}
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                alignSelf: "center",
+                margin: "2rem",
+              }}
               to='/products'
             >
               <button className='center' variant='contained'>
@@ -278,7 +287,7 @@ const HomeScreen = ({ match, history }) => {
                 color: "white",
                 fontSize: "20px",
                 textAlign: "center",
-                lineHeight: "2rem"
+                lineHeight: "2rem",
               }}
             >
               We've got food deals the whole family will love for lunch or
@@ -286,7 +295,11 @@ const HomeScreen = ({ match, history }) => {
             </h4>
 
             <Link
-              style={{ justifyContent: "center", display: "flex", padding:"30px" }}
+              style={{
+                justifyContent: "center",
+                display: "flex",
+                padding: "30px",
+              }}
               to='/products'
             >
               <button className='center' variant='contained'>
@@ -296,7 +309,7 @@ const HomeScreen = ({ match, history }) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

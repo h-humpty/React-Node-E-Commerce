@@ -34,7 +34,7 @@ const Header = () => {
           </LinkContainer>
           {/* <Route render={({ history }) => <SearchBox history={history} />} /> */}
           <Navbar.Toggle aria-controls='basic-navbar-nav' />
-          <Navbar.Collapse id='basic-navbar-nav'>
+          <Navbar.Collapse style={{backgroundColor: "#ed1c24", zIndex:1, transition: "none 0s ease 0s" }} id='basic-navbar-nav'>
             <Nav style={{textTransform: "uppercase"}} className='ml-auto '>
               {userInfo ? (
                 <NavDropdown title={userInfo.name} id='username'>

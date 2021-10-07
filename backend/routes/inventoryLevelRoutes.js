@@ -10,14 +10,6 @@ const admin = require("../middleware/authMiddleware");
 const ObjectId = require("mongodb").ObjectId;
 
 async function intervalFunction() {
-  let inventoryLevel = await InventoryLevel.aggregate([
-    {
-      $sort: {
-        item: 1,
-      },
-    },
-  ]);
-
   let receipts = await Receipt.aggregate([
     {
       $unwind: {
@@ -32,11 +24,11 @@ async function intervalFunction() {
     },
     {
       $sort: {
-        receipt_number: -1,
+        receipt_date: -1,
       },
     },
     {
-      $limit: 100,
+      $limit: 50,
     },
   ]);
 
@@ -114,90 +106,121 @@ async function intervalFunction() {
 
           let name =
             receipts[j].line_items.variant_name &&
-            receipts[j].line_items.variant_name !== undefined
-              ? receipts[j].line_items.variant_name.split("/")[0].trim()
-              : receipts[j].category_name;
+            receipts[j].line_items.variant_name !== undefined &&
+            receipts[j].line_items.variant_name.split("/")[0].trim();
+
           let size =
             receipts[j].line_items.variant_name &&
             receipts[j].line_items.variant_name.split("/")[1] !== undefined &&
             receipts[j].line_items.variant_name.split("/")[1].trim();
 
           if (
-            // name === inventoryLevel[i].item &&
-            receipts[j].line_items.update === false
+            receipts[j].line_items.variant_name === "Small" ||
+            receipts[j].line_items.variant_name === "Big" ||
+            receipts[j].line_items.variant_name === null
           ) {
-            let inventoryLevel = await InventoryLevel.findOne({ item: name });
+            name =
+              receipts[j].line_items.item_name === "Roti & Naan"
+                ? "Roti"
+                : receipts[j].line_items.item_name;
+            size = receipts[j].line_items.variant_name;
+          }
 
-            if (inventoryLevel) {
-              let totalQuantity =
-                inventoryLevel.in_stock - receipts[j].line_items.quantity;
+          let inventoryLevel = await InventoryLevel.findOne({ item: name });
 
-              await InventoryLevel.findOneAndUpdate(
-                { _id: inventoryLevel._id },
-                {
-                  $set: {
-                    updated_at_receipt: receipts[j].receipt_date,
-                    in_stock: totalQuantity,
-                  },
+          // console.log(receipts[j])
+          // console.log("variant = " + receipts[j].line_items.variant_name)
+          // console.log(name)
+          // console.log(inventoryLevel)
+
+          if (inventoryLevel) {
+            console.log(inventoryLevel);
+            let totalQuantity =
+              inventoryLevel.in_stock - receipts[j].line_items.quantity;
+
+            const updated = await InventoryLevel.findOneAndUpdate(
+              { _id: inventoryLevel._id },
+              {
+                $set: {
+                  updated_at_receipt: receipts[j].receipt_date,
+                  in_stock: totalQuantity,
                 },
-                { useFindAndModify: false }
-              );
+              },
+              { useFindAndModify: false }
+            );
 
-              await Receipt.findOneAndUpdate(
-                {
-                  "line_items._id": receipts[j].line_items._id,
+            // console.log(updated)
+
+            await Receipt.findOneAndUpdate(
+              {
+                "line_items._id": receipts[j].line_items._id,
+              },
+              {
+                $set: {
+                  "line_items.$.update": true,
                 },
-                {
-                  $set: {
-                    "line_items.$.update": true,
-                  },
-                },
-                { useFindAndModify: false }
-              );
-            } else {
-              let recipes = await Recipe.findOne({ label: name });
+              },
+              { useFindAndModify: false }
+            );
+          } else {
+            let recipes = await Recipe.findOne({ label: name });
 
-              if (recipes) {
-                for (let k = 0; k < recipes.ingredients.length; k++) {
-                  let inventoryLevelRecipe = await InventoryLevel.findOne({
-                    item: recipes.ingredients[k].text,
-                  });
+            // console.log("variant = " + receipts[j].line_items.variant_name)
+            // console.log(inventoryLevel)
+            // console.log(name)
+            // console.log(recipes)
 
-                  if (inventoryLevelRecipe) {
-                    let newQuantitySize =
-                      size && size === "Half"
-                        ? receipts[j].line_items.quantity / 2
-                        : receipts[j].line_items.quantity;
+            if (recipes) {
+              console.log(name);
+              console.log(size);
+              console.log("variant = " + receipts[j].line_items.variant_name);
+              for (let k = 0; k < recipes.ingredients.length; k++) {
+                let inventoryLevelRecipe = await InventoryLevel.findOne({
+                  item: recipes.ingredients[k].text,
+                });
 
-                    let totalQuantityRecipe =
-                      recipes.ingredients[k].weight * newQuantitySize;
+                if (inventoryLevelRecipe) {
+                  let newQuantitySize =
+                    size && size === "Half"
+                      ? receipts[j].line_items.quantity / 2
+                      : receipts[j].line_items.quantity;
 
-                    let updateStock =
-                      inventoryLevelRecipe.in_stock - totalQuantityRecipe;
+                  console.log("Quantity Size = " + newQuantitySize);
 
-                    await InventoryLevel.findOneAndUpdate(
-                      { _id: inventoryLevelRecipe._id },
-                      {
-                        $set: {
-                          updated_at_receipt: receipts[j].receipt_date,
-                          in_stock: updateStock,
-                        },
+                  let totalQuantityRecipe =
+                    newQuantitySize &&
+                    (recipes.ingredients[k].weight / 1000) * newQuantitySize;
+
+                  let updateStock =
+                    inventoryLevelRecipe.in_stock - totalQuantityRecipe;
+
+                  console.log("updateStock = " + updateStock);
+                  // console.log(inventoryLevelRecipe);
+
+                  const updated = await InventoryLevel.findOneAndUpdate(
+                    { item: recipes.ingredients[k].text },
+                    {
+                      $set: {
+                        updated_at_receipt: receipts[j].receipt_date,
+                        in_stock: updateStock,
                       },
-                      { useFindAndModify: false }
-                    );
+                    },
+                    { useFindAndModify: false }
+                  );
 
-                    await Receipt.findOneAndUpdate(
-                      {
-                        "line_items._id": receipts[j].line_items._id,
+                  console.log(updated);
+
+                  await Receipt.findOneAndUpdate(
+                    {
+                      "line_items._id": receipts[j].line_items._id,
+                    },
+                    {
+                      $set: {
+                        "line_items.$.update": true,
                       },
-                      {
-                        $set: {
-                          "line_items.$.update": true,
-                        },
-                      },
-                      { useFindAndModify: false }
-                    );
-                  }
+                    },
+                    { useFindAndModify: false }
+                  );
                 }
               }
             }
@@ -269,7 +292,7 @@ async function intervalFunction() {
   }
 }
 
-setInterval(intervalFunction, 600000);
+setInterval(intervalFunction, 6000);
 
 router.route("/updateinventory").get(protect, admin);
 

@@ -195,13 +195,13 @@ const RecipeEditScreen = ({ history, match }) => {
     let findCategory = filteredCategories.filter((items) => {
       if (items.label === list[index]["text"]) {
         return items;
-      } else if (items.label === e.target) {
+      } else if (items.label === e.label) {
         return items;
       }
     });
 
     if (findCategory.length > 0) {
-      console.log(findCategory[0]);
+      // console.log(findCategory[0]);
 
       list[index]["category"] = findCategory[0].category;
       list[index]["text"] = findCategory[0].label;
@@ -227,7 +227,7 @@ const RecipeEditScreen = ({ history, match }) => {
   const handleAddClick = () => {
     setIngredients([
       ...ingredients,
-      { text: "", weight: 0, image: "", category: "", cost: 0 },
+      { text: "", weight: 0, image: "", category: "", cost: 0, average_cost: 0, },
     ]);
   };
 
@@ -423,7 +423,7 @@ const RecipeEditScreen = ({ history, match }) => {
                 );
               })}
 
-              {productDetail && (
+              {productDetail.variants && (
                 <Row style={{ display: "flex", flex: 2 }}>
                   <Form.Group
                     as={Col}
@@ -439,7 +439,7 @@ const RecipeEditScreen = ({ history, match }) => {
                       name='sellingPrice'
                       type='text'
                       placeholder='Selling Price'
-                      value={productDetail.variants.default_price.toFixed(2)}
+                      value={productDetail.variants.default_price}
                       readOnly
                     ></Form.Control>
                   </Form.Group>

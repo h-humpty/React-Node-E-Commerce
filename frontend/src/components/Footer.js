@@ -6,7 +6,7 @@ const Footer = () => {
     <footer
       style={{
         display: "grid",
-        height: "150px",
+        height: "20vh",
         backgroundColor: "floralwhite",
         alignContent: "center",
       }}
@@ -51,9 +51,10 @@ const Footer = () => {
                 width: "250px",
                 justifyContent: "center",
                 letterSpacing: "1px",
-                padding: "10px"
+                padding: "10px",
+                margin: "0.5rem"
               }}
-              onClick={()=> window.open("https://www.facebook.com/Backyardbbqrestaurant/?ref=page_internal")}
+              onClick={()=> window.open("https://www.facebook.com/Backyardbbqrestaurant")}
               className='social-media'
             >
               <i
@@ -72,9 +73,10 @@ const Footer = () => {
                 width: "250px",
                 justifyContent: "center",
                 letterSpacing: "1px",
-                padding: "10px"
+                padding: "10px",
+                margin: "0.5rem"
               }}
-              onClick={()=> window.open("https://www.instagram.com/backyard.bbq.restaurant/?hl=en")}
+              onClick={()=> window.open("https://www.instagram.com/backyard.bbq.restaurant")}
               className='social-media'
             >
               <i

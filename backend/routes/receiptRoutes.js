@@ -48,7 +48,7 @@ async function loop() {
     // console.log(data)
     for (let i = 0; i < data.receipts.length; i++) {
       // console.log(LastData[0])
-      console.log(LastData[0].receipt_date < data.receipts[i].receipt_date)
+      // console.log(LastData[0].receipt_date < data.receipts[i].receipt_date)
       if (LastData[0].receipt_date < data.receipts[i].receipt_date) {
         
         await Receipt.create(data.receipts[i]); 
@@ -58,7 +58,7 @@ async function loop() {
   })();
 }
 
-setInterval(loop, 1000 * 60 * 60);
+setInterval(loop, 60000);
 
 router.route("/").get(
   asyncHandler(async (req, res) => {
@@ -67,7 +67,7 @@ router.route("/").get(
     const pageSize = 50;
     const page = req.query.pageNumber ? req.query.pageNumber : 1;
 
-    console.log(req.query.display);
+    // console.log(req.query.display);
 
     if (req.query.display === "All") {
       const receipts = await Receipt.aggregate([

@@ -53,7 +53,7 @@ const CartScreen = ({ match, location, history }) => {
         {" "}
         Cart
       </h1>
-      <div style={{ display: "inline-flex", width: "100%" }}>
+      <div style={{ display: "flex", width: "100%", flexDirection: "column" }}>
         {cartItems.length === 0 ? (
           <Message>
             Your Cart is Empty <Link to='/'>Go Back</Link>
@@ -141,22 +141,32 @@ const CartScreen = ({ match, location, history }) => {
           </div>
         )}
 
-        <Card style={{ width: "20%", height: "fit-content" }}>
-          <ListGroup variants='flush'>
-            <ListGroup.Item>
-              <h2>
-                Subtotal:
-                {/* ({cartItems.reduce((acc, item) => acc + item.qty, 0)}) */}
-              </h2>
-              <text>
-                Rs.
-                {cartItems
-                  .reduce((acc, item) => acc + item.qty * item.price, 0)
-                  .toFixed(0)}
-              </text>
-            </ListGroup.Item>
+        <Row
+          style={{
+            width: "100%",
+            height: "fit-content",
+            display: "flex",
+            alignSelf: "center",
+            justifyContent: "center",
+            margin: "2rem"
+          }}
+        >
+          <Row style={{ border: "1px solid rgba(0, 0, 0, 0.125" }}>
+            <h3 style={{marginLeft: "1rem"}}>
+              Subtotal:{" "}
+              {
+                <text>
+                  Rs.
+                  {cartItems
+                    .reduce((acc, item) => acc + item.qty * item.price, 0)
+                    .toFixed(0)}
+                </text>
+              }
+              {/* ({cartItems.reduce((acc, item) => acc + item.qty, 0)}) */}
+            </h3>
+          </Row>
 
-            {/* <Button
+          {/* <Button
                 type='button'
                 className='btn-block'
                 disabled={cartItems.length === 0}
@@ -164,8 +174,7 @@ const CartScreen = ({ match, location, history }) => {
               >
                 Checkout
               </Button> */}
-          </ListGroup>
-        </Card>
+        </Row>
       </div>
       {/* <div style={{height: "70px", width:"100%", backgroundColor:"#ed1c24", position:"fixed", bottom:"0"}}>
 

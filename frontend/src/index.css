@@ -7,13 +7,46 @@ h3 {
 }
 
 h1 {
-  font-size: 1.8rem;
   padding: 1rem 0;
+  font-size: 5.5rem;
 }
 
 h2 {
-  font-size: 1.4rem;
-  padding: 0.5rem 0;
+  padding: 1rem 0;
+  font-size: 5rem;
+}
+
+.home-div {
+  height: 600px
+}
+
+.products-card {
+  width: 25%
+}
+
+@media(max-width: 850px){
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 3rem;
+  }
+
+  .carousel-slider {
+    height: 60vh;
+    width: 100%;
+    padding: 30px;
+  }
+
+  .home-div{
+    height: 90vh;
+    flex-direction: column;
+  }
+
+  .products-card {
+    width: 90vw;
+  }
 }
 
 .rating span {
