@@ -18,13 +18,13 @@ const Header = () => {
   return (
     <header>
       <Navbar
-        style={{ backgroundColor: "#ed1c24", height: "150px" }}
+        style={{ backgroundColor: "#ed1c24", }}
         
         variant='dark'
         expand='lg'
         collapseOnSelect
       >
-        <Container>
+        <Container style={{display: "contents"}}>
           <LinkContainer to='/'>
             <img
               style={{ height: "80px", width: "200px", cursor: "pointer" }}

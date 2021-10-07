@@ -6,7 +6,6 @@ const Footer = () => {
     <footer
       style={{
         display: "grid",
-        height: "20vh",
         backgroundColor: "floralwhite",
         alignContent: "center",
       }}

@@ -96,7 +96,7 @@ const HomeScreen = ({ match, history }) => {
             fontFamily: "Montserrat,sans-serif",
             fontWeight: "900",
             color: "#4a4a4a",
-            fontSize: "2.7rem",
+            
           }}
         >
           BACKYARD BBQ'S DEALS
@@ -179,7 +179,7 @@ const HomeScreen = ({ match, history }) => {
             display: "flex",
             width: "100%",
             flex: 2,
-   
+           
           }}
 
           className="home-div"
@@ -214,7 +214,7 @@ const HomeScreen = ({ match, history }) => {
                 fontWeight: "900",
                 textAlign: "center",
                 fontFamily: "Montserrat,sans-serif",
-                padding: "30px",
+           
               }}
             >
               Try our new Arabic Platter !
