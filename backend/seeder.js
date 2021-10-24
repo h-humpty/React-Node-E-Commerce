@@ -37,38 +37,38 @@ connectDB();
 //   }
 // };
 
-// const importData = async () => {
-//   try {
-//     // await Order.deleteMany();
+const importData = async () => {
+  try {
+    await Inventory.deleteMany();
 
-//     // await Receipt.deleteMany();
+    await Receipt.deleteMany();
 
-//     await InventoryLevel.deleteMany();
+    await InventoryLevel.deleteMany();
 
-//     const sample = items.map((item) => {
-//       const { Item, Category, image, MonthlySalary } = item;
-//       const date = new Date();
+    const sample = items.map((item) => {
+      const { Item, Category, image, MonthlySalary } = item;
+      const date = new Date();  
 
-//       return {
-//         category: Category,
-//         item: Item,
-//         in_stock: 0,
-//         updated_at: date,
-//         vendor: "Grocery",
-//         image: image ? image : "",
-//         monthly_salary: MonthlySalary && MonthlySalary
-//       };
-//     });
-//     // await Receipt.insertMany(receiptData);
-//     await InventoryLevel.insertMany(sample);
+      return {
+        category: Category,
+        item: Item,
+        in_stock: 0,
+        updated_at: date,
+        vendor: "Grocery",
+        image: image ? image : "",
+        monthly_salary: MonthlySalary && MonthlySalary,
+      };
+    });
+    // await Receipt.insertMany(receiptData);
+    await InventoryLevel.insertMany(sample);
 
-//     console.log("InventoryLevels Imported!".green.inverse);
-//     process.exit();
-//   } catch (error) {
-//     console.error(`${error}.red.inverse`);
-//     process.exit(1);
-//   }
-// };
+    console.log("InventoryLevels Imported!".green.inverse);
+    process.exit();
+  } catch (error) {
+    console.error(`${error}.red.inverse`);
+    process.exit(1);
+  }
+};
 
 // const importData = async () => {
 //   try {
@@ -94,56 +94,54 @@ connectDB();
 //   }
 // };
 
-const importData = async () => {
-  try {
-    await Inventory.deleteMany();
+// const importData = async () => {
+//   try {
+//     await Inventory.deleteMany();
 
-    const sampleInv = inventory.map((i) => {
-      const {
-        created_at,
-        category,
-        item_name,
-        item_quantity,
-        item_cost,
-        total_cost,
-        paid,
-        date_paid,
-      } = i;
+// const sampleInv = inventory.map((i) => {
+//   const {
+//     created_at,
+//     category,
+//     item_name,
+//     item_quantity,
+//     item_cost,
+//     total_cost,
+//     paid,
+//     date_paid,
+//   } = i;
 
-      let totalCost = i.total_cost && parseInt((i.total_cost).replace(",",""));
+//   let totalCost = i.total_cost && parseInt((i.total_cost).replace(",",""));
 
-      let itemCost = !isNaN(i["item_cost"]) ? parseInt((item_cost).replace(",","")) : 0;
-      let itemQuantity = !isNaN(i["item_quantity"])
-        ? parseInt((i["item_quantity"]).replace(",",""))
-        : 0;
+//   let itemCost = !isNaN(i["item_cost"]) ? parseInt((item_cost).replace(",","")) : 0;
+//   let itemQuantity = !isNaN(i["item_quantity"])
+//     ? parseInt((i["item_quantity"]).replace(",",""))
+//     : 0;
 
-     
+//   // console.log(i[" total_cost "])
 
-      // console.log(i[" total_cost "])
+//   return {
+//     category_name: category,
+//     item_name: item_name,
+//     item_quantity: itemQuantity,
+//     item_cost: itemCost,
+//     total_cost: totalCost,
+//     paid: true,
+//     date_paid: Date(date_paid),
+//     vendor: "Store",
+//   };
+// });
 
-      return {
-        category_name: category,
-        item_name: item_name,
-        item_quantity: itemQuantity,
-        item_cost: itemCost,
-        total_cost: totalCost,
-        paid: true,
-        date_paid: Date(date_paid),
-        vendor: "Store",
-      };
-    });
+// // console.log(parseInt(("1,200.00 ").replace(",","")))
+// // console.log(sampleInv);
+// await Inventory.insertMany(sampleInv);
 
-    // console.log(parseInt(("1,200.00 ").replace(",","")))
-    // console.log(sampleInv);
-    await Inventory.insertMany(sampleInv);
-
-    console.log("Inventory Imported!".green.inverse);
-    process.exit();
-  } catch (error) {
-    console.error(`${error}.red.inverse`);
-    process.exit(1);
-  }
-};
+//     console.log("Inventory Imported!".green.inverse);
+//     process.exit();
+//   } catch (error) {
+//     console.error(`${error}.red.inverse`);
+//     process.exit(1);
+//   }
+// };
 
 // const importData = async () => {
 //   try {

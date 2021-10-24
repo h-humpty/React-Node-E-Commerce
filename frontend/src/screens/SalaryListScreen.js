@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { LinkContainer } from "react-router-bootstrap";
+// import { LinkContainer } from "react-router-bootstrap";
 import { Table, Button, Row, Col, Modal, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { DateRangePicker } from "react-date-range";
-import Message from "../components/Message";
-import Loader from "../components/Loader";
+// import { DateRangePicker } from "react-date-range";
+// import Message from "../components/Message";
+// import Loader from "../components/Loader";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 // import Paginate from "../components/Paginate";
 import {
   salaryInventory,
-  listDatesInventory,
+  // listDatesInventory,
 } from "../actions/inventoryActions";
 // import { INVENTORY_CREATE_RESET } from "../constants/productConstants";
 // import { listDatesInventory } from "../actions/inventoryActions";
@@ -26,10 +26,10 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
-import Chip from "@material-ui/core/Chip";
-import Divider from "@material-ui/core/Divider";
+// import Chip from "@material-ui/core/Chip";
+// import Divider from "@material-ui/core/Divider";
 import { makeStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
+// import clsx from "clsx";
 import Typography from "@material-ui/core/Typography";
 import Select from "react-select";
 
@@ -94,8 +94,8 @@ const SalaryListScreen = ({ history, match }) => {
   const inventorySalary = useSelector((state) => state.inventorySalary);
   const {
     loading,
-    error,
-    success: successInventory,
+    // error,
+    // success: successInventory,
     inventory,
   } = inventorySalary;
 
@@ -103,9 +103,9 @@ const SalaryListScreen = ({ history, match }) => {
     (state) => state.inventoryLevelSalary
   );
   const {
-    loading: loadingInventoryLevel,
-    error: errorInventoryLevel,
-    success: successInventoryLevel,
+    // loading: loadingInventoryLevel,
+    // error: errorInventoryLevel,
+    // success: successInventoryLevel,
     inventoryLevel,
   } = inventoryLevelSalary;
 
@@ -113,8 +113,8 @@ const SalaryListScreen = ({ history, match }) => {
     (state) => state.inventoryLevelCreate
   );
   const {
-    loading: loadingCreate,
-    error: errorCreate,
+    // loading: loadingCreate,
+    // error: errorCreate,
     success: successCreate,
   } = inventoryLevelCreate;
 
@@ -122,8 +122,8 @@ const SalaryListScreen = ({ history, match }) => {
     (state) => state.inventoryLevelUpdate
   );
   const {
-    loading: loadingUpdate,
-    error: errorUpdate,
+    // loading: loadingUpdate,
+    // error: errorUpdate,
     success: successUpdate,
   } = inventoryLevelUpdate;
 
@@ -274,7 +274,7 @@ const SalaryListScreen = ({ history, match }) => {
 
   // console.log(inventoryLevel)
 
-  console.log(totes);
+  // console.log(totes);
 
   // console.log(updatedId)
 
@@ -523,7 +523,6 @@ const SalaryListScreen = ({ history, match }) => {
                           </thead>
                           {inventory &&
                             inventory.map((items, idx) => {
-                              // console.log(items)
                               if (items.item_name === name) {
                                 return (
                                   <tbody key={idx}>
@@ -586,7 +585,6 @@ const SalaryListScreen = ({ history, match }) => {
                 })}
             </>
           </Table> */}
-          {/* <Paginate pages={pages} page={page} isAdmin={true} /> */}
         </>
       )}
     </>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Button, Form, Dropdown } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import FormContainer from "../components/FormContainer";
 import Message from "../components/Message";
@@ -88,7 +88,7 @@ const InventoryCreateScreen = ({ history }) => {
 
     if (successCreate) {
       dispatch({ type: INVENTORY_CREATE_RESET });
-      history.push(`/admin/inventory/create`);
+      history.push(`/admin/inventorylist`);
       setCategory("");
       setName("");
       setCost(0);
@@ -111,6 +111,12 @@ const InventoryCreateScreen = ({ history }) => {
     todayDate,
     undefine,
   ]);
+
+  useMemo(() => {
+    if (quantity && cost) {
+      setTotalCost(quantity * cost);
+    }
+  }, [cost, quantity]);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -180,7 +186,6 @@ const InventoryCreateScreen = ({ history }) => {
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
-                  
                   isDisabled={false}
                   isLoading={false}
                   isClearable={false}
@@ -271,16 +276,18 @@ const InventoryCreateScreen = ({ history }) => {
               ></Form.Control>
             </Form.Group>
 
-            <Form.Group controlId='size'>
-              <Form.Label>Size</Form.Label>
-              <Form.Control
-                type='text'
-                placeholder='Enter Size'
-                value={size}
-                onChange={(e) => setSize(e.target.value)}
-                required
-              ></Form.Control>
-            </Form.Group>
+           
+              <Form.Group controlId='size'>
+                <Form.Label>Size</Form.Label>
+                <Form.Control
+                  type='text'
+                  placeholder='Enter Size'
+                  value={size}
+                  onChange={(e) => setSize(e.target.value)}
+                  required
+                ></Form.Control>
+              </Form.Group>
+          
 
             <Form.Group controlId='quantity'>
               <Form.Label>Quantity</Form.Label>
@@ -297,14 +304,10 @@ const InventoryCreateScreen = ({ history }) => {
               <Form.Label>Total Cost</Form.Label>
               <Form.Control
                 type='text'
-                placeholder='Enter category'
+                placeholder='Total'
                 required
+                readOnly
                 value={totalCost}
-                onChange={(e) =>
-                  setTotalCost(
-                    quantity && cost ? quantity * cost : e.target.value
-                  )
-                }
               ></Form.Control>
             </Form.Group>
 

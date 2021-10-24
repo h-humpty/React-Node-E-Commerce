@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  Fragment,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button, Form, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -40,24 +34,11 @@ const RecipeEditScreen = ({ history, match }) => {
     success: successUpdate,
   } = recipeUpdate;
 
-  const productFiltered = useSelector((state) => state.productFiltered);
-  const {
-    loading: loadingFiltered,
-    error: errorFiltered,
-    success: successFiltered,
-    products,
-  } = productFiltered;
-
   const inventoryLevelList = useSelector((state) => state.inventoryLevelList);
-  const {
-    loading: loadingLevelList,
-    error: errorLevelError,
-    success: successLevelList,
-    inventoryLevel,
-  } = inventoryLevelList;
+  const { success: successLevelList, inventoryLevel } = inventoryLevelList;
 
   const recipeDetails = useSelector((state) => state.recipeDetails);
-  const { loading, error, success, recipe } = recipeDetails;
+  const { loading, success, recipe } = recipeDetails;
 
   // console.log(recipe)
 
@@ -81,7 +62,7 @@ const RecipeEditScreen = ({ history, match }) => {
     dispatch({ type: RECIPE_DETAILS_RESET });
   }, [dispatch]);
 
-  console.log(productDetail);
+  // console.log(productDetail);
 
   useMemo(async () => {
     const config = {
@@ -110,7 +91,15 @@ const RecipeEditScreen = ({ history, match }) => {
     dispatch(listRecipes());
     dispatch(listInventoryLevel());
     dispatch(listRecipeDetails(recipeId));
-  }, [dispatch, history, recipeId, successUpdate, userInfo]);
+  }, [
+    dispatch,
+    history,
+    recipeId,
+    successUpdate,
+    userInfo,
+    ingredients,
+    setIngredients,
+  ]);
   // console.log(success);
 
   useMemo(() => {
@@ -126,7 +115,7 @@ const RecipeEditScreen = ({ history, match }) => {
             item.category === "Poultry" ||
             item.category === "Beef" ||
             item.category === "Mutton" ||
-            item.item === "Water"
+            item.item === "Tap Water"
           )
             return item;
         })
@@ -171,16 +160,14 @@ const RecipeEditScreen = ({ history, match }) => {
       setVariant_id(recipe.variant_id && recipe.variant_id);
       setImage(recipe.image);
     }
-  }, [filteredCategories, ingredients, recipe, success]);
+  }, [filteredCategories, ingredients, recipe, success, setIngredients]);
 
   useMemo(() => {
     if (ingredients) {
       setTotalCost(
-        ingredients
-          .filter((items) => items.average_cost)
-          .reduce((a, b) => {
-            return a + b.average_cost;
-          }, 0)
+        ingredients.reduce((a, b) => {
+          return a + b.average_cost;
+        }, 0)
       );
     }
   }, [ingredients]);
@@ -188,21 +175,29 @@ const RecipeEditScreen = ({ history, match }) => {
   const handleInputChange = (e, index) => {
     let list = [...ingredients];
 
+    list[index]["index"] = index;
+
     if (e.target) {
       list[index]["weight"] = e.target.value;
     }
 
-    let findCategory = filteredCategories.filter((items) => {
-      if (items.label === list[index]["text"]) {
-        return items;
-      } else if (items.label === e.label) {
-        return items;
-      }
-    });
+    let findCategory = [];
+
+    if (e.label) {
+      findCategory = filteredCategories.filter((items) => {
+        if (items.label === e.label) {
+          return items;
+        }
+      });
+    } else {
+      findCategory = filteredCategories.filter((items) => {
+        if (items.label === list[index]["text"]) {
+          return items;
+        }
+      });
+    }
 
     if (findCategory.length > 0) {
-      // console.log(findCategory[0]);
-
       list[index]["category"] = findCategory[0].category;
       list[index]["text"] = findCategory[0].label;
       list[index]["label"] = findCategory[0].label;
@@ -227,7 +222,14 @@ const RecipeEditScreen = ({ history, match }) => {
   const handleAddClick = () => {
     setIngredients([
       ...ingredients,
-      { text: "", weight: 0, image: "", category: "", cost: 0, average_cost: 0, },
+      {
+        text: "",
+        weight: 0,
+        image: "",
+        category: "",
+        cost: 0,
+        average_cost: 0,
+      },
     ]);
   };
 
@@ -245,240 +247,222 @@ const RecipeEditScreen = ({ history, match }) => {
     );
   };
 
-  // console.log(recipe);
+  // console.log(productDetail)
 
   return (
-    <>
-      <Link to='/admin/recipelist' className='btn btn-light my-3'>
-        Go Back
-      </Link>
+    filteredCategories &&
+    ingredients[0] && (
+      <>
+        <Link to='/admin/recipelist' className='btn btn-light my-3'>
+          Go Back
+        </Link>
 
-      <h1 style={{ textAlign: "center" }}>{recipe && recipe.label}</h1>
-      <div style={{ flex: 1 }}>
-        <FormContainer>
-          <div
-            style={{
-              backgroundImage: `url(${image})`,
-              width: "100%",
-              height: "500px",
-              backgroundSize: "contain",
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
-              flex: 1,
-            }}
-            className='div-image'
-          ></div>
-          {loadingUpdate && loading}
-          {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
-          {errorFiltered ? (
-            <Message variant='danger'>{errorFiltered}</Message>
-          ) : (
-            <Form onSubmit={submitHandler}>
-              {/* <Form.Group controlId='label' style={{ padding: 10 }}>
-                <Form.Label style={{ padding: 10 }}>Item Name</Form.Label>
+        <h1 style={{ textAlign: "center" }}>{recipe && recipe.label}</h1>
+        <div style={{ flex: 1 }}>
+          <FormContainer>
+            <div
+              style={{
+                backgroundImage: `url(${image})`,
+                width: "100%",
+                height: "500px",
+                backgroundSize: "contain",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "center",
+                flex: 1,
+              }}
+              className='div-image'
+            ></div>
+            {loadingUpdate && loading}
+            {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+            {filteredCategories && ingredients && (
+              <Form onSubmit={submitHandler}>
+                <h2 style={{ padding: 50, textAlign: "center" }}>
+                  Ingredients
+                </h2>
 
-                <Fragment>
-                  {label.label && (
-                    <Form.Control
-                      name='itemName'
-                      type='text'
-                      placeholder='Item Name'
-                      value={label.label}
-                      readOnly
-                    ></Form.Control>
-                  )}
-                </Fragment>
-              </Form.Group> */}
+                {ingredients.map((i, index) => {
+                  return (
+                    <Row className='create-update' key={index}>
+                      {filteredCategories[0] && ingredients[0] && (
+                        <Form.Group
+                          as={Col}
+                          controlId='Item'
+                          style={{
+                            width: "100%",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            padding: 10,
+                            borderRadius: 15,
+                            flex: 3,
+                          }}
+                        >
+                          <Form.Label>Ingredient</Form.Label>
+                          <Row></Row>
+                          <Fragment>
+                            {filteredCategories[0] && ingredients[0].value && (
+                              <Select
+                                className='basic-single '
+                                classNamePrefix='select '
+                                defaultValue={
+                                  ingredients[index].value && ingredients[index]
+                                }
+                                isDisabled={false}
+                                isLoading={false}
+                                isClearable={false}
+                                isRtl={false}
+                                isSearchable={true}
+                                name='text'
+                                options={filteredCategories}
+                                onChange={(e) => handleInputChange(e, index)}
+                              />
+                            )}
+                          </Fragment>
+                        </Form.Group>
+                      )}
 
-              {/* <Form.Group controlId='name' style={{ padding: 10 }}>
-                <Form.Label style={{ padding: 10 }}>Image URL</Form.Label>
-                <Form.Control
-                  type='text'
-                  placeholder='Enter Image'
-                  value={image}
-                  readOnly
-                ></Form.Control>
-              </Form.Group> */}
-              <h2 style={{ padding: 50, textAlign: "center" }}>Ingredients</h2>
+                      {/* add weight to input */}
+                      <Form.Group
+                        as={Col}
+                        controlId='weight'
+                        style={{
+                          width: "65%",
+                          alignItems: "center",
+                          padding: 10,
+                          borderRadius: 15,
+                        }}
+                      >
+                        <Form.Label>Weight (Grams)</Form.Label>
+                        <Form.Control
+                          name='weight'
+                          type='text'
+                          placeholder='Enter Weight'
+                          value={i.weight}
+                          onChange={(e) => handleInputChange(e, index)}
+                        ></Form.Control>
+                      </Form.Group>
 
-              {ingredients.map((i, index) => {
-                return (
-                  <Row className='create-update' key={index}>
-                    <Form.Group
+                      <Form.Group
+                        as={Col}
+                        controlId='averageCost'
+                        style={{
+                          width: "65%",
+                          alignItems: "center",
+                          padding: 10,
+                          borderRadius: 15,
+                        }}
+                      >
+                        <Form.Label>Average Cost</Form.Label>
+                        <Form.Control
+                          name='averageCost'
+                          type='text'
+                          placeholder='Cost'
+                          value={
+                            ingredients[index].average_cost > 0
+                              ? ingredients[index].average_cost.toFixed(2)
+                              : 0
+                          }
+                          readOnly
+                        ></Form.Control>
+                      </Form.Group>
+
+                      <Form.Group
+                        as={Col}
+                        controlId='buttons'
+                        style={{
+                          width: "100%",
+                          padding: "10px",
+                          borderRadius: 15,
+                          flexDirection: "flex-end",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Form.Label>Add/Remove</Form.Label>
+                        <div style={{ width: 10, height: 0 }}></div>
+                        {ingredients.length - 1 === index && (
+                          <Button
+                            as={Col}
+                            onClick={() => handleAddClick(index)}
+                            style={{
+                              marginRight: 5,
+                              backgroundColor: "red",
+                              border: 0,
+                            }}
+                          >
+                            <i className='fas fa-plus'></i>
+                          </Button>
+                        )}
+
+                        {ingredients.length !== 1 && (
+                          <Button
+                            onClick={() => handleRemoveClick(index)}
+                            style={{ backgroundColor: "red", border: 0 }}
+                          >
+                            <i className='fas fa-minus'></i>
+                          </Button>
+                        )}
+                      </Form.Group>
+                    </Row>
+                  );
+                })}
+
+                { (
+                  <Row style={{ display: "flex", flex: 2 }}>
+                    {productDetail !== undefined && productDetail.variants && <Form.Group
                       as={Col}
-                      controlId='Item'
+                      controlId='sellingPrice'
                       style={{
-                        width: "100%",
-                        flexDirection: "row",
-                        alignItems: "center",
+                        flex: 1,
                         padding: 10,
                         borderRadius: 15,
-                        flex: 3,
                       }}
                     >
-                      <Form.Label>Ingredient</Form.Label>
-                      <Row></Row>
-                      <Fragment>
-                        {filteredCategories &&
-                          ingredients[index].index === index && (
-                            <Select
-                              className='basic-single '
-                              classNamePrefix='select '
-                              defaultValue={ingredients[index]}
-                              isDisabled={false}
-                              isLoading={false}
-                              isClearable={false}
-                              isRtl={false}
-                              isSearchable={true}
-                              name='text'
-                              options={filteredCategories}
-                              onChange={(e) => handleInputChange(e, index)}
-                            />
-                          )}
-                      </Fragment>
-                    </Form.Group>
-
-                    {/* add weight to input */}
-                    <Form.Group
-                      as={Col}
-                      controlId='weight'
-                      style={{
-                        width: "65%",
-                        alignItems: "center",
-                        padding: 10,
-                        borderRadius: 15,
-                      }}
-                    >
-                      <Form.Label>Weight (Grams)</Form.Label>
+                      <Form.Label>Selling Price</Form.Label>
                       <Form.Control
-                        name='weight'
+                        name='sellingPrice'
                         type='text'
-                        placeholder='Enter Weight'
-                        value={i.weight}
-                        onChange={(e) => handleInputChange(e, index)}
+                        placeholder='Selling Price'
+                        value={productDetail.variants.default_price}
+                        readOnly
                       ></Form.Control>
-                    </Form.Group>
+                    </Form.Group>}
+                    
 
                     <Form.Group
                       as={Col}
-                      controlId='averageCost'
+                      controlId='totalCost'
                       style={{
-                        width: "65%",
-                        alignItems: "center",
+                        flex: 1,
                         padding: 10,
                         borderRadius: 15,
                       }}
                     >
-                      <Form.Label>Average Cost</Form.Label>
+                      <Form.Label>Total Cost</Form.Label>
                       <Form.Control
-                        name='averageCost'
+                        name='totalCost'
                         type='text'
-                        placeholder='Cost'
-                        value={
-                          ingredients[index].average_cost > 0
-                            ? ingredients[index].average_cost.toFixed(2)
-                            : 0
-                        }
+                        placeholder='Total Cost'
+                        value={totalCost ? totalCost.toFixed(2): 0}
                         readOnly
                       ></Form.Control>
                     </Form.Group>
-
-                    <Form.Group
-                      as={Col}
-                      controlId='buttons'
-                      style={{
-                        width: "100%",
-                        padding: "10px",
-                        borderRadius: 15,
-                        flexDirection: "flex-end",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Form.Label>Add/Remove</Form.Label>
-                      <div style={{ width: 10, height: 0 }}></div>
-                      {ingredients.length - 1 === index && (
-                        <Button
-                          as={Col}
-                          onClick={handleAddClick}
-                          style={{
-                            marginRight: 5,
-                            backgroundColor: "red",
-                            border: 0,
-                          }}
-                        >
-                          <i className='fas fa-plus'></i>
-                        </Button>
-                      )}
-
-                      {ingredients.length !== 1 && (
-                        <Button
-                          onClick={() => handleRemoveClick(index)}
-                          style={{ backgroundColor: "red", border: 0 }}
-                        >
-                          <i className='fas fa-minus'></i>
-                        </Button>
-                      )}
-                    </Form.Group>
                   </Row>
-                );
-              })}
+                )}
 
-              {productDetail.variants && (
-                <Row style={{ display: "flex", flex: 2 }}>
-                  <Form.Group
-                    as={Col}
-                    controlId='sellingPrice'
-                    style={{
-                      flex: 1,
-                      padding: 10,
-                      borderRadius: 15,
-                    }}
+                <Row>
+                  <Button
+                    type='submit'
+                    variant='primary'
+                    style={{ backgroundColor: "red", border: 0 }}
                   >
-                    <Form.Label>Selling Price</Form.Label>
-                    <Form.Control
-                      name='sellingPrice'
-                      type='text'
-                      placeholder='Selling Price'
-                      value={productDetail.variants.default_price}
-                      readOnly
-                    ></Form.Control>
-                  </Form.Group>
-
-                  <Form.Group
-                    as={Col}
-                    controlId='totalCost'
-                    style={{
-                      flex: 1,
-                      padding: 10,
-                      borderRadius: 15,
-                    }}
-                  >
-                    <Form.Label>Total Cost</Form.Label>
-                    <Form.Control
-                      name='totalCost'
-                      type='text'
-                      placeholder='Total Cost'
-                      value={totalCost.toFixed(2)}
-                      readOnly
-                    ></Form.Control>
-                  </Form.Group>
+                    Submit
+                  </Button>
                 </Row>
-              )}
-
-              <Row>
-                <Button
-                  type='submit'
-                  variant='primary'
-                  style={{ backgroundColor: "red", border: 0 }}
-                >
-                  Submit
-                </Button>
-              </Row>
-            </Form>
-          )}
-        </FormContainer>
-      </div>
-    </>
+              </Form>
+            )}
+          </FormContainer>
+        </div>
+      </>
+    )
   );
 };
 

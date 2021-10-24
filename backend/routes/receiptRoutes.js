@@ -30,35 +30,52 @@ async function loop() {
     config
   );
 
-  const LastData = await Receipt.aggregate(
-    [
-      {
-        $sort: {
-          receipt_date: -1,
-        },
+  const LastData = await Receipt.aggregate([
+    {
+      $sort: {
+        receipt_date: -1,
       },
-      {
-        $limit: 1,
-      },
-    ]
-  );
+    },
+    {
+      $limit: 1,
+    },
+  ]);
   // console.log(LastData);
   // res.json(LastData)
+
   (async () => {
     // console.log(data)
-    for (let i = 0; i < data.receipts.length; i++) {
-      // console.log(LastData[0])
-      // console.log(LastData[0].receipt_date < data.receipts[i].receipt_date)
-      if (LastData[0].receipt_date < data.receipts[i].receipt_date) {
+    
+      // console.log(data.receipts[i].receipt_date)
+      // console.log("date = " + data.receipts[0].receipt_date )
+      // console.log(LastData[0]);
+      // console.log(LastData[0].receipt_date < data.receipts[i].receipt_date);
+
+    
+      if (LastData.length === 1) {
+        for (let i = 0; i < data.receipts.length; i++) {
+        if (
+          LastData[0].receipt_date < data.receipts[i].receipt_date 
+        ) {
+
+          let duplicate = await Receipt.find({receipt_number : data.receipts[i].receipt_number })
         
-        await Receipt.create(data.receipts[i]); 
-        // console.log(receipt)
+          console.log(duplicate)
+          if(duplicate.length === 0) {
+
+            await Receipt.create(data.receipts[i]);
+          }
+          // console.log(data.receipts[i])
+        }
       }
-    }
+      } else if (LastData.length === 0) {
+        await Receipt.create(data.receipts[0]);
+      }
+    
   })();
 }
 
-setInterval(loop, 60000);
+setInterval(loop, 6000);
 
 router.route("/").get(
   asyncHandler(async (req, res) => {

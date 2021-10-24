@@ -10,6 +10,12 @@ const admin = require("../middleware/authMiddleware");
 const ObjectId = require("mongodb").ObjectId;
 
 async function intervalFunction() {
+  const date = new Date();
+  const today = new Date().toISOString();
+  const last = new Date(
+    date.getTime() - 30 * 24 * 60 * 60 * 1000
+  ).toISOString();
+
   let receipts = await Receipt.aggregate([
     {
       $unwind: {
@@ -23,12 +29,7 @@ async function intervalFunction() {
       },
     },
     {
-      $sort: {
-        receipt_date: -1,
-      },
-    },
-    {
-      $limit: 50,
+      $limit: 250,
     },
   ]);
 
@@ -56,8 +57,8 @@ async function intervalFunction() {
           },
           {
             createdAt: {
-              $gte: new Date("Wed, 30 Sep 2020 00:00:00 GMT"),
-              $lte: new Date("Thu, 30 Sep 2021 00:00:00 GMT"),
+              $gte: new Date(last),
+              $lte: new Date(today),
             },
           },
         ],
@@ -77,33 +78,14 @@ async function intervalFunction() {
         },
       },
     },
-    {
-      $sort: {
-        _id: 1,
-      },
-    },
   ]);
 
   try {
-    const date = new Date();
-    const today = new Date().toISOString();
-    const last = new Date(
-      date.getTime() - 30 * 24 * 60 * 60 * 1000
-    ).toISOString();
-
     (async () => {
       try {
         // for (let i = 0; i < inventoryLevel.length; i++) {
         // const { updated_at, item, category } = inventoryLevel;
         for (let j = 0; j < receipts.length; j++) {
-          // const {
-          //   _id,
-          //   total_quantity,
-          //   item_name,
-          //   category_name,
-          //   receipt_date,
-          // } = receipts;
-
           let name =
             receipts[j].line_items.variant_name &&
             receipts[j].line_items.variant_name !== undefined &&
@@ -133,12 +115,19 @@ async function intervalFunction() {
           // console.log(name)
           // console.log(inventoryLevel)
 
+          // if (receipts[j].line_items.variant_name) {
+          //   console.log("name " + name);
+          //   console.log("original name " + receipts[j].line_items.variant_name);
+          // }
+
+          // console.log(name)
+          // console.log(inventoryLevel)
           if (inventoryLevel) {
-            console.log(inventoryLevel);
+            // console.log(inventoryLevel);
             let totalQuantity =
               inventoryLevel.in_stock - receipts[j].line_items.quantity;
 
-            const updated = await InventoryLevel.findOneAndUpdate(
+            await InventoryLevel.findOneAndUpdate(
               { _id: inventoryLevel._id },
               {
                 $set: {
@@ -169,11 +158,14 @@ async function intervalFunction() {
             // console.log(inventoryLevel)
             // console.log(name)
             // console.log(recipes)
-
+            // console.log(recipes)
+            // console.log(name)
             if (recipes) {
-              console.log(name);
-              console.log(size);
-              console.log("variant = " + receipts[j].line_items.variant_name);
+              // console.log(recipes.label === "Chicken Tikka" && "Chicken Tikka");
+              // console.log(name);
+              // console.log(size);
+              // console.log("variant = " + receipts[j].line_items.variant_name);
+
               for (let k = 0; k < recipes.ingredients.length; k++) {
                 let inventoryLevelRecipe = await InventoryLevel.findOne({
                   item: recipes.ingredients[k].text,
@@ -185,8 +177,6 @@ async function intervalFunction() {
                       ? receipts[j].line_items.quantity / 2
                       : receipts[j].line_items.quantity;
 
-                  console.log("Quantity Size = " + newQuantitySize);
-
                   let totalQuantityRecipe =
                     newQuantitySize &&
                     (recipes.ingredients[k].weight / 1000) * newQuantitySize;
@@ -194,10 +184,14 @@ async function intervalFunction() {
                   let updateStock =
                     inventoryLevelRecipe.in_stock - totalQuantityRecipe;
 
-                  console.log("updateStock = " + updateStock);
-                  // console.log(inventoryLevelRecipe);
+                  // console.log("name = " + name);
+                  // console.log("ingredient = " + recipes.ingredients[k].text);
+                  // console.log("Quantity Size = " + newQuantitySize);
+                  // console.log("updateStock = " + updateStock);
+                  // console.log("quantity Recipe  = " + totalQuantityRecipe);
+                  // console.log(receipts[j]);
 
-                  const updated = await InventoryLevel.findOneAndUpdate(
+                  await InventoryLevel.findOneAndUpdate(
                     { item: recipes.ingredients[k].text },
                     {
                       $set: {
@@ -208,7 +202,7 @@ async function intervalFunction() {
                     { useFindAndModify: false }
                   );
 
-                  console.log(updated);
+                  // console.log(updated);
 
                   await Receipt.findOneAndUpdate(
                     {
@@ -236,7 +230,6 @@ async function intervalFunction() {
         for (let i = 0; i < inventoryCost.length; i++) {
           let averageCost =
             inventoryCost[i].TotalCost / inventoryCost[i].TotalQuantity;
-
           await InventoryLevel.findOneAndUpdate(
             { item: inventoryCost[i]._id },
             {
@@ -246,6 +239,8 @@ async function intervalFunction() {
             },
             { useFindAndModify: false }
           );
+
+          // console.log(updated)
         }
       } catch (err) {
         console.error(err);
@@ -256,6 +251,7 @@ async function intervalFunction() {
       try {
         for (let i = 0; i < inventory.length; i++) {
           if (inventory[i].updated === false) {
+            // console.log(inventory);
             // console.log(inventory[i]._id)
             await InventoryLevel.findOneAndUpdate(
               { item: inventory[i].item_name },
@@ -294,7 +290,7 @@ async function intervalFunction() {
 
 setInterval(intervalFunction, 6000);
 
-router.route("/updateinventory").get(protect, admin);
+// router.route("/updateinventory").get(protect, admin);
 
 router.route("/").get(
   protect,

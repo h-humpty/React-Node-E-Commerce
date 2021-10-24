@@ -92,11 +92,11 @@ router.route("/averagecost").get(
   admin,
   asyncHandler(async (req, res) => {
     let today = new Date().toISOString();
-    let month = new Date()
-    month.setDate(month.getDate() - 30)
+    let month = new Date();
+    month.setDate(month.getDate() - 30);
 
-    console.log(month)
-    console.log(today)
+    console.log(month);
+    console.log(today);
 
     const inventory = await Inventory.aggregate([
       {
@@ -325,13 +325,20 @@ router.route("/").post(
       totalCost,
       paid,
       datePaid,
-      vendor
+      vendor,
     } = req.body;
 
     if (!user) {
       res.status(400);
       throw new Error("No user added");
     } else {
+      let totalWeight =
+        category !== "Beverage" && Number(size) >= 0
+          ? quantity * Number(size)
+          : null;
+
+      console.log(totalWeight);
+
       const inventory = new Inventory({
         user: user._id,
         edited_by: user.name,
@@ -339,7 +346,7 @@ router.route("/").post(
         item_name: name,
         item_cost: cost,
         item_size: size,
-        item_quantity: quantity,
+        item_quantity: totalWeight ? totalWeight : quantity,
         total_cost: totalCost,
         paid: paid,
         date_paid: datePaid,
@@ -397,8 +404,7 @@ router.route("/:id").put(
         datePaid,
       } = req.body;
 
-      console.log(req.body)
-      
+      console.log(req.body);
 
       const inventory = await Inventory.findById(req.params.id);
 

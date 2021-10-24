@@ -747,10 +747,6 @@ const items = [
       "https://www.edamam.com/food-img/e35/e35ea1529983a3db51a32a1afa7b3837.jpg",
   },
   {
-    Item: "Roti",
-    Category: "Staff",
-  },
-  {
     Item: "Salt",
     Category: "Spice",
     image:
@@ -762,10 +758,6 @@ const items = [
   },
   {
     Item: "Saunf",
-    Category: "Spice",
-  },
-  {
-    Item: "Sawagha",
     Category: "Spice",
   },
   {
@@ -951,10 +943,6 @@ const items = [
   {
     Item: "Knife",
     Category: "Kitchen Supply",
-  },
-  {
-    Item: "Leg Piece",
-    Category: "Poultry",
   },
 ];
 

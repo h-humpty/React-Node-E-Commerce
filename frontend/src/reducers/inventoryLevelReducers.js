@@ -26,7 +26,7 @@ import {
 
   
 export const inventoryLevelListReducer = (
-    state = { loading: true, inventoryLevel: [] },
+    state = { loading: true, inventoryLevel: []},
     action
   ) => {
     switch (action.type) {
@@ -39,7 +39,7 @@ export const inventoryLevelListReducer = (
           success: true
         };
       case INVENTORYLEVEL_LIST_FAIL:
-        return { loading: false, error: action.payload };
+        return { loading: false, error: action.payload};
       default:
         return state;
     }

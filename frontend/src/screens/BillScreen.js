@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { LinkContainer } from "react-router-bootstrap";
+// import { LinkContainer } from "react-router-bootstrap";
 import {
   Table,
   Row,
@@ -41,23 +41,15 @@ const BillScreen = ({ history }) => {
   const {
     loading: loadingUnpaid,
     error: errorUnpaid,
-    success: successUnpaid,
+
     receipt,
   } = receiptUnpaid;
 
   const receiptPaid = useSelector((state) => state.receiptPaid);
-  const {
-    loading: loadingPaid,
-    error: errorPaid,
-    success: successPaid,
-  } = receiptPaid;
+  const { success: successPaid } = receiptPaid;
 
   const receiptRemove = useSelector((state) => state.receiptRemove);
-  const {
-    loading: loadingRemove,
-    error: errorRemove,
-    success: successRemove,
-  } = receiptRemove;
+  const { success: successRemove } = receiptRemove;
 
   const inventoryUnpaid = useSelector((state) => state.inventoryUnpaid);
   const {
@@ -68,22 +60,10 @@ const BillScreen = ({ history }) => {
   } = inventoryUnpaid;
 
   const inventoryUpdate = useSelector((state) => state.inventoryUpdate);
-  const {
-    loading: loadingInventoryUpdate,
-    error: errorInventoryUpdate,
-    success: successInventoryUpdate,
-  } = inventoryUpdate;
-
-  // console.log(errorPaid);
+  const { success: successInventoryUpdate } = inventoryUpdate;
 
   const receiptDetails = useSelector((state) => state.receiptDetails);
-  const {
-    loading: loadingDetails,
-    error: errorDetails,
-    success: successDetails,
-  } = receiptDetails;
-
-  //   console.log(inventoryAll);
+  const { success: successDetails } = receiptDetails;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -96,7 +76,6 @@ const BillScreen = ({ history }) => {
         }
       })
   );
-  // const state = () => setShowArr([...falseArr]);
 
   useEffect(() => {
     if (userInfo || userInfo.isAdmin) {
@@ -192,7 +171,11 @@ const BillScreen = ({ history }) => {
   const submitPayableHandler = (e) => {
     e.preventDefault();
     dispatch(
-      updateInventory({ _id: payableId, datePaid: new Date(payableDate).toISOString(), paid: true })
+      updateInventory({
+        _id: payableId,
+        datePaid: new Date(payableDate).toISOString(),
+        paid: true,
+      })
     );
   };
 
@@ -208,11 +191,6 @@ const BillScreen = ({ history }) => {
     list[idx] = false;
     setShowArr(list);
   };
-
-  // console.log(receipt);
-  // console.log(receiptList);
-  // console.log(receiptId);
-  // console.log(date);
 
   const handlePayableOpen = (id) => {
     setPayableShow(true);

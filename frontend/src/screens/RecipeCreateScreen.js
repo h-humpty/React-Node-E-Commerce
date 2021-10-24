@@ -75,15 +75,10 @@ const RecipeCreateScreen = ({ history }) => {
       setIngredients([]);
       setUser(userInfo);
     }
-  }, [
-    history,
-    userInfo,
-    successCreate,
-    dispatch,
-  ]);
+  }, [history, userInfo, successCreate, dispatch]);
 
   // console.log(productFiltered)
-  console.log(ingredients)
+  console.log(ingredients);
 
   useMemo(() => {
     if (successFiltered) {
@@ -110,7 +105,6 @@ const RecipeCreateScreen = ({ history }) => {
     }
   }, [products, successFiltered]);
 
-
   useMemo(() => {
     if (successInventoryLevelSuccess) {
       let filtered = inventoryLevel
@@ -124,7 +118,7 @@ const RecipeCreateScreen = ({ history }) => {
             item.category === "Poultry" ||
             item.category === "Beef" ||
             item.category === "Mutton" ||
-            item.item === "Water"
+            item.item === "Tap Water"
           )
             return item;
         })
@@ -136,13 +130,16 @@ const RecipeCreateScreen = ({ history }) => {
             category: item.category,
             average_cost: item.average_cost ? item.average_cost : 0,
           };
-        }).sort(function(a, b){
-          if(a.label < b.label) { return -1; }
-          if(a.label > b.label) { return 1; }
+        })
+        .sort(function (a, b) {
+          if (a.label < b.label) {
+            return -1;
+          }
+          if (a.label > b.label) {
+            return 1;
+          }
           return 0;
-      })
-
-
+        });
 
       setFilteredCategories([...filtered]);
     }
@@ -164,7 +161,6 @@ const RecipeCreateScreen = ({ history }) => {
     }
 
     // console.log( e.label)
-    
 
     let findCategory = filteredCategories.filter((items) => {
       if (items.label === list[index]["text"]) {
@@ -176,7 +172,6 @@ const RecipeCreateScreen = ({ history }) => {
 
     // console.log(findCategory[0]);
     if (findCategory.length > 0) {
-
       list[index]["category"] = findCategory[0].category;
       list[index]["text"] = findCategory[0].label;
       list[index]["label"] = findCategory[0].label;
@@ -265,7 +260,7 @@ const RecipeCreateScreen = ({ history }) => {
             {/* <Form.Group controlId='label'> */}
             <Form.Label style={{ padding: 10 }}>Item Name</Form.Label>
             <Fragment>
-              {selectProducts[0] && (
+              {selectProducts[0] && successFiltered && (
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
@@ -315,21 +310,22 @@ const RecipeCreateScreen = ({ history }) => {
                   >
                     <Form.Label>Ingredient</Form.Label>
                     <Fragment>
-                      {filteredCategories[0] && (
-                        <Select
-                          className='basic-single'
-                          classNamePrefix='select'
-                          defaultValue={filteredCategories[0]}
-                          isDisabled={false}
-                          isLoading={false}
-                          isClearable={false}
-                          isRtl={false}
-                          isSearchable={true}
-                          name='text'
-                          options={filteredCategories}
-                          onChange={(e) => handleInputChange(e, index)}
-                        />
-                      )}
+                      {filteredCategories[0] &&
+                        successInventoryLevelSuccess && (
+                          <Select
+                            className='basic-single'
+                            classNamePrefix='select'
+                            defaultValue={filteredCategories[0]}
+                            isDisabled={false}
+                            isLoading={false}
+                            isClearable={false}
+                            isRtl={false}
+                            isSearchable={true}
+                            name='text'
+                            options={filteredCategories}
+                            onChange={(e) => handleInputChange(e, index)}
+                          />
+                        )}
                     </Fragment>
                   </Form.Group>
 

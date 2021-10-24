@@ -28,7 +28,7 @@ const CheckoutButtonBar = () => {
     history.push("/login?redirect=shipping");
   };
 
-  console.log(top);
+  // console.log(top);
 
   useEffect(() => {
     setTop(getTop);
