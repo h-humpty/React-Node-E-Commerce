@@ -80,7 +80,7 @@ router.route("/dates").get(
         },
       },
     ]);
-    console.log(new Date(startDate).toISOString());
+    // console.log(new Date(startDate).toISOString());
     // console.log((endDate))
     // console.log(inventory)
     // console.log(inventory)
@@ -96,8 +96,8 @@ router.route("/averagecost").get(
     let month = new Date();
     month.setDate(month.getDate() - 30);
 
-    console.log(month);
-    console.log(today);
+    // console.log(month);
+    // console.log(today);
 
     const inventory = await Inventory.aggregate([
       {

@@ -83,8 +83,7 @@ async function intervalFunction() {
   try {
     (async () => {
       try {
-        // for (let i = 0; i < inventoryLevel.length; i++) {
-        // const { updated_at, item, category } = inventoryLevel;
+       
         for (let j = 0; j < receipts.length; j++) {
           let name =
             receipts[j].line_items.variant_name &&
@@ -110,20 +109,10 @@ async function intervalFunction() {
 
           let inventoryLevel = await InventoryLevel.findOne({ item: name });
 
-          // console.log(receipts[j])
-          // console.log("variant = " + receipts[j].line_items.variant_name)
-          // console.log(name)
-          // console.log(inventoryLevel)
-
-          // if (receipts[j].line_items.variant_name) {
-          //   console.log("name " + name);
-          //   console.log("original name " + receipts[j].line_items.variant_name);
-          // }
-
-          // console.log(name)
-          // console.log(inventoryLevel)
+  
+        
           if (inventoryLevel) {
-            // console.log(inventoryLevel);
+   
             let totalQuantity =
               inventoryLevel.in_stock - receipts[j].line_items.quantity;
 
@@ -138,7 +127,7 @@ async function intervalFunction() {
               { useFindAndModify: false }
             );
 
-            // console.log(updated)
+          
 
             await Receipt.findOneAndUpdate(
               {
@@ -154,18 +143,8 @@ async function intervalFunction() {
           } else {
             let recipes = await Recipe.findOne({ label: name });
 
-            // console.log("variant = " + receipts[j].line_items.variant_name)
-            // console.log(inventoryLevel)
-            // console.log(name)
-            // console.log(recipes)
-            // console.log(recipes)
-            // console.log(name)
             if (recipes) {
-              // console.log(recipes.label === "Chicken Tikka" && "Chicken Tikka");
-              // console.log(name);
-              // console.log(size);
-              // console.log("variant = " + receipts[j].line_items.variant_name);
-
+            
               for (let k = 0; k < recipes.ingredients.length; k++) {
                 let inventoryLevelRecipe = await InventoryLevel.findOne({
                   item: recipes.ingredients[k].text,
@@ -184,13 +163,7 @@ async function intervalFunction() {
                   let updateStock =
                     inventoryLevelRecipe.in_stock - totalQuantityRecipe;
 
-                  // console.log("name = " + name);
-                  // console.log("ingredient = " + recipes.ingredients[k].text);
-                  // console.log("Quantity Size = " + newQuantitySize);
-                  // console.log("updateStock = " + updateStock);
-                  // console.log("quantity Recipe  = " + totalQuantityRecipe);
-                  // console.log(receipts[j]);
-
+               
                   await InventoryLevel.findOneAndUpdate(
                     { item: recipes.ingredients[k].text },
                     {

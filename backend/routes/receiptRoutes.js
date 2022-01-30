@@ -7,14 +7,6 @@ const admin = require("../middleware/authMiddleware");
 const axios = require("axios");
 const cron = require("node-cron");
 
-// setInterval(function(){
-//   if(userArray) {
-//     var report = mongoose.connection.db.collection('report');
-//     report.insert({datenow:new Date(),userlist:userArray},function(err,doc) {
-//       if(err) throw err;
-//     });
-//   }
-// },600000);
 
 async function loop() {
   const config = {
@@ -40,18 +32,9 @@ async function loop() {
       $limit: 1,
     },
   ]);
-  // console.log(LastData);
-  // res.json(LastData)
+ 
 
   (async () => {
-    // console.log(data)
-    
-      // console.log(data.receipts[i].receipt_date)
-      // console.log("date = " + data.receipts[0].receipt_date )
-      // console.log(LastData[0]);
-      // console.log(LastData[0].receipt_date < data.receipts[i].receipt_date);
-
-    
       if (LastData.length === 1) {
         for (let i = 0; i < data.receipts.length; i++) {
         if (
@@ -65,7 +48,7 @@ async function loop() {
 
             await Receipt.create(data.receipts[i]);
           }
-          // console.log(data.receipts[i])
+       
         }
       }
       } else if (LastData.length === 0) {
@@ -75,16 +58,15 @@ async function loop() {
   })();
 }
 
-setInterval(loop, 6000);
+setInterval(loop, 60000);
 
 router.route("/").get(
   asyncHandler(async (req, res) => {
-    // const receipts = await Receipt.find({});
+   
 
     const pageSize = 50;
     const page = req.query.pageNumber ? req.query.pageNumber : 1;
 
-    // console.log(req.query.display);
 
     if (req.query.display === "All") {
       const receipts = await Receipt.aggregate([
