@@ -60,10 +60,7 @@ const App = () => {
               <Route path='/profile' component={ProfileScreen} />
               <Route path='/product/:id' component={ProductScreen} />
               <Route path='/admin/userlist' component={UserListScreen} />
-              <Route
-                path='/admin/user/:id/edit/'
-                component={UserEditScreen}
-              />
+              <Route path='/admin/user/:id/edit/' component={UserEditScreen} />
               <Route path='/admin/productlist' component={ProductListScreen} />
               <Route
                 path='/admin/product/:id/edit'

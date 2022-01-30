@@ -159,9 +159,9 @@ const BillScreen = ({ history }) => {
     );
   };
 
-  const submitRemove = (receiptNumber) => {
-    dispatch(removeReceipt(receiptNumber));
-  };
+  // const submitRemove = (receiptNumber) => {
+  //   dispatch(removeReceipt(receiptNumber));
+  // };
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -361,8 +361,7 @@ const BillScreen = ({ history }) => {
                     <th>QUANTITY</th>
                     <th>COST</th>
                     <th>TOTAL COST</th>
-                    <th>PAID</th>
-                    <th>PAYMENT DATE</th>
+            
                     <th>EDIT/DELETE</th>
                   </tr>
                 </thead>
@@ -376,13 +375,12 @@ const BillScreen = ({ history }) => {
                               <td>{inventory.edited_by}</td>
                               <td>{inventory.createdAt.slice(0, 10)}</td>
                               <td>{inventory.vendor}</td>
-                              <td>{inventory.category}</td>
+                              <td>{inventory.category_name }</td>
                               <td>{inventory.item_name}</td>
                               <td>{inventory.item_quantity}</td>
                               <td>{inventory.item_cost}</td>
                               <td>{inventory.total_cost}</td>
-                              <td>{inventory.paid && "PAID"}</td>
-                              <td>{inventory.date_paid.slice(0, 10)}</td>
+                        
                               <td>
                                 <Button
                                   variant='light'

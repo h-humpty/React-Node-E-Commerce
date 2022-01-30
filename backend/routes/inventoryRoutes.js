@@ -21,6 +21,7 @@ router.route("/").get(
     const startDate = new Date().toISOString().slice(0, 10);
     const endDate = new Date().toISOString();
 
+
     const inventory = await Inventory.aggregate([
       {
         $match: {
@@ -328,6 +329,7 @@ router.route("/").post(
       vendor,
     } = req.body;
 
+
     if (!user) {
       res.status(400);
       throw new Error("No user added");
@@ -336,8 +338,6 @@ router.route("/").post(
         category !== "Beverage" && Number(size) >= 0
           ? quantity * Number(size)
           : null;
-
-      console.log(totalWeight);
 
       const inventory = new Inventory({
         user: user._id,
@@ -403,8 +403,6 @@ router.route("/:id").put(
         paid,
         datePaid,
       } = req.body;
-
-      console.log(req.body);
 
       const inventory = await Inventory.findById(req.params.id);
 

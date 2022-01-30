@@ -107,7 +107,6 @@ const InventoryListScreen = ({ history, match }) => {
     }
   };
 
-  console.log(inventory)
 
   return (
     <>
@@ -178,7 +177,7 @@ const InventoryListScreen = ({ history, match }) => {
                         <td>{inventory.item_cost}</td>
                         <td>{inventory.total_cost}</td>
                         <td>{inventory.paid && "PAID"}</td>
-                        <td>{inventory.date_paid.slice(0, 10)}</td>
+                        <td>{inventory.date_paid && inventory.date_paid.slice(0, 10)}</td>
                         <td>
                           <LinkContainer
                             to={`/admin/inventory/${inventory._id}/edit`}
@@ -255,7 +254,7 @@ const InventoryListScreen = ({ history, match }) => {
                         <td>{inventory.item_cost}</td>
                         <td>{inventory.total_cost}</td>
                         <td>{inventory.paid && "PAID"}</td>
-                        <td>{inventory.date_paid.slice(0, 10)}</td>
+                        <td>{inventory.date_paid && inventory.date_paid.slice(0, 10)}</td>
                         <td>
                           <LinkContainer
                             to={`/admin/inventory/${inventory._id}/edit`}

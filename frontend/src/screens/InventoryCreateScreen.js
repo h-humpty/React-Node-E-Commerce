@@ -130,11 +130,14 @@ const InventoryCreateScreen = ({ history }) => {
         quantity,
         totalCost,
         paid,
-        datePaid: paid && new Date(datePaid).toISOString(),
+        datePaid: paid ? new Date(datePaid).toISOString() : null,
         vendor,
       })
     );
   };
+
+  console.log(paid)
+  console.log(datePaid)
 
   // console.log(categoryList);
 

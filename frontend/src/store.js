@@ -39,7 +39,7 @@ import {
   inventoryDatesReducer,
   inventoryCostReducer,
   inventorySalaryReducer,
-  inventoryUnpaidReducer
+  inventoryUnpaidReducer,
 } from "./reducers/inventoryReducers";
 
 import {
@@ -52,7 +52,7 @@ import {
   receiptUnpaidReducer,
   receiptDetailReducer,
   receiptPaidReducer,
-  receiptRemoveReducer
+  receiptRemoveReducer,
 } from "./reducers/receiptReducers";
 
 import {
@@ -70,8 +70,15 @@ import {
   InventoryLevelUpdateReducer,
   inventoryLevelDeleteReducer,
   inventoryLevelGroupedReducer,
-  inventoryLevelSalaryReducer
+  inventoryLevelSalaryReducer,
 } from "./reducers/inventoryLevelReducers";
+
+import {
+  employeeListReducer,
+  employeeCreateReducer,
+  employeeDeleteReducer,
+  employeeUpdateReducer,
+} from "./reducers/employeeReducers";
 
 const reducer = combineReducers({
   productList: productListReducer,
@@ -125,6 +132,10 @@ const reducer = combineReducers({
   inventoryLevelDelete: inventoryLevelDeleteReducer,
   inventoryLevelUpdate: InventoryLevelUpdateReducer,
   inventoryLevelCreate: inventoryLevelCreateReducer,
+  employeeList: employeeListReducer,
+  employeeDelete: employeeDeleteReducer,
+  employeeUpdate: employeeUpdateReducer,
+  employeeCreate: employeeCreateReducer,
 });
 
 const cartItemsFromStorage = localStorage.getItem("cartItems")

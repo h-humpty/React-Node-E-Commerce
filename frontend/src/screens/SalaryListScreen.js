@@ -3,7 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Table, Button, Row, Col, Modal, Form } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 // import { DateRangePicker } from "react-date-range";
-// import Message from "../components/Message";
+import Message from "../components/Message";
 // import Loader from "../components/Loader";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -16,10 +16,12 @@ import {
 // import { listDatesInventory } from "../actions/inventoryActions";
 import "../css/Search.css";
 import {
-  createInventoryLevel,
-  salaryInventoryLevel,
-  updateInventoryLevel,
-} from "../actions/inventoryLevelActions";
+  listEmployee,
+  createEmployee,
+  deleteEmployee,
+  updateEmployee,
+} from "../actions/employeeActions";
+
 import { INVENTORYLEVEL_CREATE_RESET } from "../constants/inventoryLevelConstants";
 import { INVENTORYLEVEL_UPDATE_RESET } from "../constants/inventoryLevelConstants";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -71,8 +73,9 @@ const useStyles = makeStyles((theme) => ({
 const SalaryListScreen = ({ history, match }) => {
   const [show, setShow] = useState(false);
   const [updateShow, setUpdateShow] = useState(false);
-  const [name, setName] = useState("");
-  const [id, setId] = useState(0);
+  const [fName, setFName] = useState("");
+  const [lName, setLName] = useState("");
+  const [salaryId, setSalaryId] = useState("");
   const [salary, setSalary] = useState(0);
   const [jobTitle, setJobTitle] = useState("");
   const [dateEmployeed, setDateEmployeed] = useState(
@@ -85,47 +88,35 @@ const SalaryListScreen = ({ history, match }) => {
   const [updatedStartDate, setUpdatedStartDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
-
-  console.log(updatedSalary);
+  const [updatedEndDate, setUpdatedEndDate] = useState("")
+  const [offDays, setOffDays] = useState(0);
+  const [mongoId, setMongoId] = useState("");
+  const [id, setId] = useState("")
 
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const inventorySalary = useSelector((state) => state.inventorySalary);
+  const employeeList = useSelector((state) => state.employeeList);
   const {
-    loading,
-    // error,
-    // success: successInventory,
-    inventory,
-  } = inventorySalary;
+    loading: loadingEmployeeList,
+    error: errorEmployeeList,
+    success: successEmployeeList,
+    employee,
+  } = employeeList;
 
-  const inventoryLevelSalary = useSelector(
-    (state) => state.inventoryLevelSalary
-  );
+  const employeeCreate = useSelector((state) => state.employeeCreate);
   const {
-    // loading: loadingInventoryLevel,
-    // error: errorInventoryLevel,
-    // success: successInventoryLevel,
-    inventoryLevel,
-  } = inventoryLevelSalary;
+    loading: loadingEmployeeCreate,
+    error: errorEmployeeCreate,
+    success: successEmployeeCreate,
+  } = employeeCreate;
 
-  const inventoryLevelCreate = useSelector(
-    (state) => state.inventoryLevelCreate
-  );
+  const employeeUpdate = useSelector((state) => state.employeeUpdate);
   const {
-    // loading: loadingCreate,
-    // error: errorCreate,
-    success: successCreate,
-  } = inventoryLevelCreate;
-
-  const inventoryLevelUpdate = useSelector(
-    (state) => state.inventoryLevelUpdate
-  );
-  const {
-    // loading: loadingUpdate,
-    // error: errorUpdate,
-    success: successUpdate,
-  } = inventoryLevelUpdate;
+    loading: loadingEmployeeUpdate,
+    error: errorEmployeeUpdate,
+    success: successEmployeeUpdate,
+  } = employeeUpdate;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -134,15 +125,16 @@ const SalaryListScreen = ({ history, match }) => {
     if (!userInfo || !userInfo.isAdmin) {
       history.push("/login");
     } else {
-      dispatch(salaryInventory());
-      dispatch(salaryInventoryLevel());
+
+      dispatch(listEmployee());
     }
 
-    if (successCreate || successUpdate) {
+    if (successEmployeeCreate || successEmployeeUpdate) {
       dispatch({ type: INVENTORYLEVEL_CREATE_RESET });
       dispatch({ type: INVENTORYLEVEL_UPDATE_RESET });
       history.push("/admin/salarylist");
-      setName("");
+      setFName("");
+      setLName("");
       setSalary(0);
       setDateEmployeed(new Date().toISOString().slice(0, 10));
       setEmployeed(true);
@@ -150,133 +142,145 @@ const SalaryListScreen = ({ history, match }) => {
       setUpdatedJobTitle("");
       setUpdatedId("");
       setUpdatedStartDate(new Date().toISOString().slice(0, 10));
+      setJobTitle("");
+      setSalaryId("");
+      setMongoId("");
     }
-  }, [dispatch, history, successCreate, successUpdate, userInfo]);
-
-  useMemo(() => {
-    const updateList = () => {
-      if (name) {
-        let filteredList = inventoryLevel.filter(
-          (items) => items.item === name
-        );
-        let index = filteredList[0] && filteredList[0].salary.length - 1;
-
-        if (filteredList && index >= 0) {
-          setUpdatedId(() => filteredList[0].salary[index]._id);
-          setUpdatedSalary(() => filteredList[0].salary[index].monthly_salary);
-        } else if (!index) {
-          setUpdatedId("");
-          setUpdatedSalary(0);
-        }
-      }
-    };
-
-    updateList();
-  }, [inventoryLevel, name]);
+  }, [
+    dispatch,
+    history,
+    successEmployeeCreate,
+    successEmployeeUpdate,
+    userInfo,
+  ]);
 
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(
-      createInventoryLevel({
-        user: userInfo,
-        category: "Salary",
-        item: name,
+      createEmployee({
+        first_name: fName,
+        last_name: lName,
+        employeed: true,
+        id_number: id,
         salary: [
           {
             monthly_salary: salary,
             start_date: new Date(dateEmployeed).toISOString(),
+            off_days_allotted: offDays,
+            job_title: jobTitle,
           },
         ],
-        created_at: new Date().toISOString(),
       })
     );
   };
+
+  // console.log(updatedSalary)
 
   const submitUpdateHandler = (e) => {
     e.preventDefault();
     dispatch(
-      updateInventoryLevel({
-        user: userInfo,
-        item: name,
-        monthly_salary: updatedSalary,
-        start_date: new Date(updatedStartDate).toISOString(),
+      updateEmployee({
+        first_name: fName,
+        last_name: lName,
+        salary: [
+          {
+          salary_id: salaryId,
+          monthly_salary: isNaN(updatedSalary) ? parseInt((updatedSalary).replace(",","")): updatedSalary ,
+          start_date: new Date(updatedStartDate).toISOString(),
+          end_date: updatedEndDate && updatedEndDate,
+          job_title: updatedJobTitle,
+        }
+        ],
         employeed: employeed,
-        id: updatedId,
+        id_number: updatedId,
+        _id: mongoId
       })
     );
   };
-
-  const uniqueNames = Array.from(
-    new Set(inventory.map((items) => items.item_name))
-  ).sort((a, b) => a.localeCompare(b));
-
-  const reactSelectList = uniqueNames.map((items) => ({
-    label: items,
-    value: true,
+  // const uniqueNames = Array.from(
+  //   new Set(inventory.map((items) => items.item_name))
+  // ).sort((a, b) => a.localeCompare(b));
+  const reactSelectList = employee.map((items, idx) => ({
+    label: `${items.first_name} ${items.last_name}`,
+    value: idx,
+    id: items._id,
   }));
 
-  const totes = {};
+  // const totes = {};
 
-  uniqueNames.filter((item) => {
-    let sum = 0;
-    inventory.map((items, idx) => {
-      if (items.item_name === item) {
-        sum = sum + items.total_cost;
+  // uniqueNames.filter((item) => {
+  //   let sum = 0;
+  //   inventory.map((items, idx) => {
+  //     if (items.item_name === item) {
+  //       sum = sum + items.total_cost;
 
-        totes[item] = {
-          total_paid: sum,
-        };
+  //       totes[item] = {
+  //         total_paid: sum,
+  //       };
 
-        inventoryLevel.map((iL, idx) => {
-          if (iL.item === item) {
-            let total = 0;
+  //       inventoryLevel.map((iL, idx) => {
+  //         if (iL.item === item) {
+  //           let total = 0;
 
-            if (iL.salary[0]) {
-              // console.log(iL)
-              let monthlySalary =
-                iL.salary[iL.salary.length - 1].monthly_salary;
+  //           if (iL.salary[0]) {
+  //             let monthlySalary =
+  //               iL.salary[iL.salary.length - 1].monthly_salary;
 
-              // totes[item] = {
-              //   monthly_salary: monthlySalary,
-              // };
+  //             // totes[item] = {
+  //             //   monthly_salary: monthlySalary,
+  //             // };
 
-              for (let i = 0; i < iL.salary.length; i++) {
-                const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-                let firstDate = new Date(iL.salary[i].start_date);
-                let secondDate = iL.salary[i].end_date
-                  ? new Date(iL.salary[i].end_date)
-                  : new Date();
+  //             for (let i = 0; i < iL.salary.length; i++) {
+  //               const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  //               let firstDate = new Date(iL.salary[i].start_date);
+  //               let secondDate = iL.salary[i].end_date
+  //                 ? new Date(iL.salary[i].end_date)
+  //                 : new Date();
 
-                let diffDays = Math.round(
-                  Math.abs((firstDate - secondDate) / oneDay)
-                );
+  //               let diffDays = Math.round(
+  //                 Math.abs((firstDate - secondDate) / oneDay)
+  //               );
 
-                let dailySalary =
-                  (parseInt(iL.salary[i].monthly_salary) * 12) / 365;
+  //               let dailySalary =
+  //                 (parseInt(iL.salary[i].monthly_salary) * 12) / 365;
 
-                total = diffDays * dailySalary + total;
+  //               total = diffDays * dailySalary + total;
 
-                console.log(dailySalary);
-                console.log(total);
+  //               totes[item] = {
+  //                 total_payable: total,
+  //                 total_paid: sum,
+  //                 monthly_salary: monthlySalary,
+  //               };
+  //             }
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  // });
 
-                totes[item] = {
-                  total_payable: total,
-                  total_paid: sum,
-                  monthly_salary: monthlySalary,
-                };
-              }
-            }
-          }
-        });
+  useMemo(() => {
+    if (mongoId) {
+      let returnedValue = employee.find((x) => x._id === mongoId);
+
+
+      if (returnedValue) {
+
+        let index = returnedValue.salary.length - 1
+      console.log(returnedValue.salary[index])
+
+        setUpdatedId(() => returnedValue.id_number && returnedValue.id_number);
+        setUpdatedJobTitle(() => returnedValue.salary[index].job_title);
+        setUpdatedSalary(() => returnedValue.salary[index].monthly_salary);
+        setSalaryId(() => returnedValue.salary[index]._id)
+        setUpdatedStartDate(
+          () =>
+            returnedValue.salary[index].start_date &&
+            returnedValue.salary[index].start_date.slice(0, 10)
+        );
       }
-    });
-  });
-
-  // console.log(inventoryLevel)
-
-  // console.log(totes);
-
-  // console.log(updatedId)
+    }
+  }, [employee, mongoId]);
 
   return (
     <>
@@ -294,13 +298,23 @@ const SalaryListScreen = ({ history, match }) => {
           </Modal.Header>
           <Modal.Body>
             <Form onSubmit={submitHandler}>
-              <Form.Group controlId='name' style={{ padding: 10 }}>
-                <Form.Label style={{ padding: 10 }}>Full Name</Form.Label>
+              <Form.Group controlId='fname' style={{ padding: 10 }}>
+                <Form.Label style={{ padding: 10 }}>First Name</Form.Label>
                 <Form.Control
                   type='text'
-                  placeholder='Enter Full Name'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder='Enter First Name'
+                  value={fName}
+                  onChange={(e) => setFName(e.target.value)}
+                ></Form.Control>
+              </Form.Group>
+
+              <Form.Group controlId='lname' style={{ padding: 10 }}>
+                <Form.Label style={{ padding: 10 }}>Last Name</Form.Label>
+                <Form.Control
+                  type='text'
+                  placeholder='Enter Last Name'
+                  value={lName}
+                  onChange={(e) => setLName(e.target.value)}
                 ></Form.Control>
               </Form.Group>
 
@@ -346,6 +360,19 @@ const SalaryListScreen = ({ history, match }) => {
                 ></Form.Control>
               </Form.Group>
 
+              <Form.Group controlId='off_days' style={{ padding: 10 }}>
+                <Form.Label style={{ padding: 10 }}>
+                  Off Days Assigned
+                </Form.Label>
+                <Form.Control
+                  type='number'
+                  placeholder='Enter Off Days'
+                  value={offDays}
+                  onChange={(e) => setOffDays(e.target.value)}
+                  max={4}
+                ></Form.Control>
+              </Form.Group>
+
               <Row style={{ margin: 15 }}>
                 <Button
                   variant='primary'
@@ -374,7 +401,7 @@ const SalaryListScreen = ({ history, match }) => {
                 <Select
                   className='basic-single'
                   classNamePrefix='select'
-                  // defaultValue={uniqueNames[0]}
+                  // defaultValue={employee && `${employee[0].first_name} ${employee[0].last_name}`}
                   isDisabled={false}
                   isLoading={!reactSelectList}
                   isClearable={false}
@@ -382,8 +409,25 @@ const SalaryListScreen = ({ history, match }) => {
                   isSearchable={true}
                   name='names'
                   options={reactSelectList}
-                  onChange={(e) => setName(e.label)}
+                  onChange={(e) => {
+                    let firstName = e.label.split(" ")[0];
+                    let lastName = e.label.split(" ")[1];
+
+                    setMongoId(e.id);
+                    setFName(firstName);
+                    setLName(lastName);
+                  }}
                 />
+              </Form.Group>
+
+              <Form.Group controlId='id' style={{ padding: 10 }}>
+                <Form.Label style={{ padding: 10 }}>Identification Number</Form.Label>
+                <Form.Control
+                  type='text'
+                  placeholder='Enter Id'
+                  value={updatedId && updatedId}
+                  onChange={(e) => setUpdatedId(e.target.value)}
+                ></Form.Control>
               </Form.Group>
 
               <Form.Group controlId='jobtitle' style={{ padding: 10 }}>
@@ -415,6 +459,17 @@ const SalaryListScreen = ({ history, match }) => {
                   onChange={(e) => setUpdatedStartDate(e.target.value)}
                 ></Form.Control>
               </Form.Group>
+
+
+              {employeed === false && <Form.Group controlId='start_date' style={{ padding: 10 }}>
+                <Form.Label style={{ padding: 10 }}>End Date</Form.Label>
+                <Form.Control
+                  type='date'
+                  placeholder='Enter Date Fired'
+                  value={updatedEndDate}
+                  onChange={(e) => setUpdatedEndDate(e.target.value)}
+                ></Form.Control>
+              </Form.Group>}
 
               <Form.Group controlId='date_employeed' style={{ padding: 10 }}>
                 <Form.Label style={{ padding: 10 }}>Employeed</Form.Label>
@@ -456,14 +511,16 @@ const SalaryListScreen = ({ history, match }) => {
       {/* {loadingDelete && <Loader />} */}
       {/* {errorDelete && <Message variant='danger'>{errorDelete}</Message>} */}
       {/* {loadingCreate && <Loader />} */}
-      {/* {errorCreate && <Message variant='danger'>{errorCreate}</Message>} */}
-      {!loading && (
+      {errorEmployeeCreate && (
+        <Message variant='danger'>{errorEmployeeCreate}</Message>
+      )}
+      {!loadingEmployeeList && (
         <>
           <Table responsive bordered variant='light'>
             <thead>
               <tr></tr>
             </thead>
-            {uniqueNames.map((name, idx) => {
+            {employee.map((name, idx) => {
               return (
                 <tbody style={{ backgroundColor: "white" }} key={idx}>
                   <tr style={{ backgroundColor: "white" }}>
@@ -479,22 +536,23 @@ const SalaryListScreen = ({ history, match }) => {
                         <td>
                           <div className={classes.column}>
                             <Typography className={classes.heading}>
-                              {name}
+                              {name.first_name}
                             </Typography>
                           </div>
+
+                          {/* <div className={classes.column}>
+                            <Typography className={classes.secondaryHeading}>
+                              Total Paid - Rs. {name.total_paid}
+                            </Typography>
+                          </div> */}
 
                           <div className={classes.column}>
                             <Typography className={classes.secondaryHeading}>
-                              Total Paid - Rs. {totes[name].total_paid}
+                              Monthly Salary - Rs.{" "}
+                              {name.salary[0].monthly_salary}
                             </Typography>
                           </div>
-
-                          <div className={classes.column}>
-                            <Typography className={classes.secondaryHeading}>
-                              Monthly Salary - Rs. {totes[name].monthly_salary}
-                            </Typography>
-                          </div>
-
+                          {/* 
                           <div className={classes.column}>
                             <Typography className={classes.secondaryHeading}>
                               Remainder Balance - Rs.
@@ -504,7 +562,7 @@ const SalaryListScreen = ({ history, match }) => {
                                   totes[name].total_paid
                                 ).toFixed(1)}
                             </Typography>
-                          </div>
+                          </div> */}
                         </td>
                       </AccordionSummary>
 
@@ -521,7 +579,7 @@ const SalaryListScreen = ({ history, match }) => {
                               <th>TOTAL PAID</th>
                             </tr>
                           </thead>
-                          {inventory &&
+                          {/* {inventory &&
                             inventory.map((items, idx) => {
                               if (items.item_name === name) {
                                 return (
@@ -538,7 +596,7 @@ const SalaryListScreen = ({ history, match }) => {
                                   </tbody>
                                 );
                               }
-                            })}
+                            })} */}
                         </Table>
                       </AccordionDetails>
                     </Accordion>
@@ -562,18 +620,18 @@ const SalaryListScreen = ({ history, match }) => {
               </tr>
             </thead>
             <>
-              {inventory &&
-                inventory.map((inventory) => {
+              {employee &&
+                employee.map((employee) => {
                   return (
-                    <tbody key={inventory._id}>
+                    <tbody key={employee._id}>
                       <tr>
-                        <td>{inventory.edited_by}</td>
-                        <td>{inventory.createdAt.slice(0, 10)}</td>
-                        <td>{inventory.item_name}</td>
-                        <td>{inventory.monthly_salary}</td>
-                        <td>{inventory.paid && "PAID"}</td>
-                        <td>{inventory.total_cost}</td>
-                        <td>{inventory.date_paid.slice(0, 10)}</td>
+                        <td>{employee.edited_by}</td>
+                        <td>{employee.createdAt.slice(0, 10)}</td>
+                        <td>{employee.item_name}</td>
+                        <td>{employee.salary[0].monthly_salary}</td>
+                        <td>{employee.paid && "PAID"}</td>
+                        <td>{employee.total_cost}</td>
+                        <td>{employee.date_paid.slice(0, 10)}</td>
                         <td>
                           <Button variant='light' className='btn-sm'>
                             <i className='fas fa-edit'></i>

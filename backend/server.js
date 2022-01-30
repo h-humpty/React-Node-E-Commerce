@@ -24,6 +24,7 @@ const recipeRoutes = require("./routes/recipeRoutes");
 const inventoryLevelRoutes = require("./routes/inventoryLevelRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const receiptRoutes = require("./routes/receiptRoutes");
+const employeeRoutes = require("./routes/employeeRoutes");
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -40,12 +41,13 @@ app.use("/api/recipes", recipeRoutes);
 app.use("/api/inventoryLevel", inventoryLevelRoutes);
 app.use("/api/receipt", receiptRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/employees", employeeRoutes);
 
 // const __dirname = path.resolve()
 app.use("/uploads", express.static(path.join(__dirname)));
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  app.use(express.static(path.join(__dirname, "../frontend/build")));
 
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"))
