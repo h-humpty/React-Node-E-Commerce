@@ -8,6 +8,8 @@ const admin = require("../middleware/authMiddleware");
 router.get(
   "/",
   asyncHandler(async (req, res) => {
+
+  
     const pageSize = 10;
     const page = req.query.pageNumber || 1;
     const keyword = req.query.keyword

@@ -58,7 +58,7 @@ async function loop() {
   })();
 }
 
-setInterval(loop, 60000);
+// setInterval(loop, 60000);
 
 router.route("/").get(
   asyncHandler(async (req, res) => {

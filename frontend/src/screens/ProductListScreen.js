@@ -92,7 +92,7 @@ const ProductListScreen = ({ history, match }) => {
         <Message variant='danger'>{error}</Message>
       ) : (
         <>
-          <Table striped bordered hover responsive className='table-sm'>
+          <Table striped bordered hover className='table-sm'>
             <thead>
               <tr>
                 <th>VARIANT ID</th>
@@ -108,7 +108,7 @@ const ProductListScreen = ({ history, match }) => {
               return (
                 <tbody key={product._id}>
                   {product.variants.map((item) => {
-                    console.log(item);
+           
                     return (
                       <tr key={item.variant_id}>
                         <td>{item.variant_id}</td>
@@ -146,7 +146,7 @@ const ProductListScreen = ({ history, match }) => {
             })}
             </>
           </Table>
-          <Paginate pages={pages} page={page} isAdmin={true} />
+          {/* <Paginate pages={pages} page={page} isAdmin={true} /> */}
         </>
       )}
     </>
