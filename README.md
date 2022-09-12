@@ -4,7 +4,6 @@ Complete application ready for commercial use
 
 To access complete features only avalaible to admin.
 
-login onto live website.
+login onto my portfolio.
 
-admin@example.com
-123456
+https://henry-carter.netlify.app/
