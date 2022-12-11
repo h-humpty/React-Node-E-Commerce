@@ -1,4 +1,4 @@
-# E-commerce-FullStack-with-inventory-management-system
+# E-commerce-React & Node.js-with-inventory-management-system
 Complete application ready for commercial use
 
 
